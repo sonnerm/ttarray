@@ -1,0 +1,7 @@
+DEFAULT_OPTIONS={
+"mp_algo":"exact",
+}
+LAZYNESS="auto"
+DENSE_FALLBACK="warn"
+ENABLE_QUIMB=False
+ENABLE_TENPY=False
