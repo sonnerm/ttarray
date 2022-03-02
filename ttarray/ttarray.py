@@ -1,8 +1,7 @@
 import numpy as np
 import copy
 from functools import reduce
-from .dispatch import _dispatch_array_ufunc
-from .dispatch import _dispatch_array_function
+from .dispatch import dispatch_array_ufunc,dispatch_array_function
 import numpy.linalg as la
 from numpy.lib.mixins import NDArrayOperatorsMixin
 PRIMES=[2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67,
@@ -27,12 +26,15 @@ def _calc_shape(ms):
     rank=len(ms[0].shape)
     for m in ms:
         if len(m.shape!=rank):
-            raise ValueError("All matrices in a MatrixProductSlice need to have the same rank")
+            raise ValueError("All matrices in a TensorTrainSlice need to have the same rank")
     return (ms[0].shape[0],)+tuple(_product(m.shape[d] for m in ms) for d in range(1,rank-1))+(ms[-1].shape[-1],)
 def _flatten_mps(mpsl):
     pass
+class TensorTrainBase:
+    # So far this is just for isinstance
+    pass
 
-class _MatrixProductSliceData:
+class _TensorTrainSliceData:
     def __init__(self,mps):
         self.mps=mps
     def __getitem__(self,ind):
@@ -50,11 +52,11 @@ class _MatrixProductSliceData:
         it=_flatten_mps(it)
         if isinstance(ind,slice):
             if ind.step==1:
-                return self.mps._data[ind]=it
+                self.mps._data[ind]=it
             else:
                 raise IndexError("Slicing with a step not equal to one not supported")
         else: #single index i guess
-            return self.mps._data[ind]=it
+            self.mps._data[ind]=it
         self.mps.shape=_calc_shape(matrices) #need to recalculate shape
         self.mps.dtype=np.common_type(matrices) #maybe dtype has changed
     def __delitem__(self,ind):
@@ -64,17 +66,16 @@ class _MatrixProductSliceData:
     def __iter__(self):
         return self.mps._data.__iter__()
 
-class MatrixProductSlice(NDArrayOperatorsMixin):
+class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
     def __init__(self,matrices):
         self._data=matrices
-        self.M=_MatrixProductSliceData(self)
+        self.M=_TensorTrainSliceData(self)
+        self.L=len(matrices)
+        self.chi=tuple(m.shape[0] for m in matrices[1:])
         self.shape=_calc_shape(matrices)
         self.dtype=np.common_type(matrices)
     def __array__(self,dtype=None):
-        ret=self._data[0]
-        for m in self._data[1:]:
-            ret=np.tensordot(ret,m,axes=((-1),(0)))
-        return np.asarray(ret,dtype)
+        return np.asarray(self.to_array(),dtype)
     @classmethod
     def from_matrix_list(cls,matrices):
         cls(matrices)
@@ -101,11 +102,54 @@ class MatrixProductSlice(NDArrayOperatorsMixin):
             car=r
         mps[-1]=np.tensordot(mps[-1],r,axes=((-1,),(0,)))
         return cls(mps)
+    def to_array(self):
+        '''
+            Converts self into an array of the same kind as the constituent matrices
+        '''
+        ret=self._data[0]
+        for m in self._data[1:]:
+            ret=np.tensordot(ret,m,axes=((-1),(0)))
+        return ret
     def truncate(self,**kwargs):
-        return self
+        return dispatch_array_function("truncate",[self.__class__],[self],kwargs)
     def as_matrix_list(self):
+        '''
+            This method is called 'as_matrix_list' since it returns a view
+        '''
         return list(self._data) #shallow copy to protect invariants
+    def __array_function__(self,func,types,args,kwargs):
+        return dispatch_array_function(func,types,args,kwargs)
+    def __array_ufunc__(self,ufunc,method,args,kwargs):
+        return dispatch_array_ufunc(ufunc,method,args,kwargs)
+
+class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
+    def __init__(self,mpas):
+        if mpas.shape[0]!=1 or mpas.shape[-1]!=1:
+            raise ValueError("TensorTrainArrays cannot have a non-contracted boundary")
+        self._mpas=mpas
+        self.M=_mpas.M
+        self.shape=mpas.shape[1:-1]
+        self.dtype=mpas.dtype
+    def __array__(self,dtype=None):
+        return np.asarray(self.to_array(),dtype)
+    @classmethod
+    def from_array(cls,ar,dims=None,canonicalize=True):
+        return cls(TensorTrainSlice.from_array(ar,dims,canonicalize))
+    def to_array(self):
+        return self._mpas.to_array()[0,...,0]
+    @classmethod
+    def from_matrix_list(cls,mpl):
+        return cls(TensorTrainSlice(mpl))
+    @classmethod
+    def from_matrix_product_slice(self,mps):
+        return cls(mps)
+    def as_matrix_product_slice(self):
+        return copy.copy(self._mpas) #shallow copy necessary to protect invariants
+    def as_matrix_list(self):
+        return self._mpas.as_matrix_list() #already does shallow copying
     def __array_function__(self,func,types,args,kwargs):
         return _dispatch_array_function(func,types,args,kwargs)
     def __array_ufunc__(self,ufunc,method,args,kwargs):
         return _dispatch_array_ufunc(ufunc,method,args,kwargs)
+    def truncate(self,**kwargs):
+        self._mpas=self._mpas.truncate(**kwargs)

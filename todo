@@ -1,0 +1,93 @@
+* Implement default configs properly
+* Modify MatrixProductArray.M
+* Implement MPS/MPA.L
+* Implement derived routines:
+  - (empty,ones,zeros,full) empty_like, ones_like, zeros_like,full_like
+  - (eye) identity
+  - (array) asarray,asanyarray,frombuffer,fromfile,fromiter,fromstring
+  - shape
+  - (reshape) ravel, ndarray.flatten, atleast_1d, atleast_2d, atleast_3d, expand_dims, squeeze
+  - (transpose) moveaxis, rollaxis, swapaxes ndarray.T,
+  - (broadcast_to) broadcast (?), broadcast_arrays (?)
+  - (concatenate) stack, block, vstack, hstack, dstack, row_stack, column_stack
+  - (split) vsplit, hsplit, dsplit, array_split
+  - (insert) append
+  - (flip) fliplr,flipud
+  - (flip,transpose) rot90
+
+* add optional argument chi
+* Implement exact routines (creation):
+  * Product states
+    - empty,ones,zeros,full
+    - eye
+  * Decomposition from dense (for now at least)
+    - array
+    - arange,linspace,logspace,geomspace ... a bit pointless, but well
+    - fromfunction (for now, later maybe ttcross)
+    - copy
+    - tri
+    - tril,triu
+    - vander
+  * Implementation from mpa
+    - meshgrid
+    - diag,diagflat (but only k=1 so are easy, otherwise harder, but possible)
+
+* implement exact routines (manipulation)
+  * doable
+    - copyto
+    - transpose
+    - asfarray
+    - flip
+    - broadcast_to
+    - __getitem__
+    - ndarray.flat (iter)
+  * easy just add one more matrix to one end
+    - repeat
+    - tile
+  * warn for increasing bd like crazy in some cases
+    - reshape
+  * warn fail if incommensurate
+    - concatenate
+    - split
+    - delete
+    - insert
+    - resize and ndarray.resize
+    - trim_zeros (if there are any)
+  * dense fallback for now
+    - roll
+    - (__setitem__ as well)
+  * warn, fail, or use dense fallback
+    - unique
+
+* Implement additional functions:
+  - truncate
+  - recluster
+  - svd_all
+  - svd_one
+  - bond_entropy
+  - chi
+  - strange reshape
+  - ttcross
+  - random mps
+
+
+* read up on recarray
+* Not supported functions:
+  numpy.core.records.array
+  numpy.core.records.fromarrays
+  numpy.core.records.fromrecords
+  numpy.core.records.fromstring
+  numpy.core.records.fromfile
+  numpy.core.defchararray.array
+  numpy.core.defchararray.asarray
+  numpy.mgrid
+  numpy.ogrid
+* Fail not supported functions
+  numpy.asmatrix
+  numpy.mat
+  numpy.bmat
+  numpy.asscalar (since it is deprecated)
+  numpy.ascontigousarray, numpy.asfortranarray, numpy.require, ...
+
+* Implementation not (yet) necessary
+  - shape

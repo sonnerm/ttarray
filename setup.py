@@ -1,12 +1,12 @@
 from setuptools import setup
 setup(
-    name="justmps",
-    packages=["justmps"],
+    name="ttarray",
+    packages=["ttarray"],
     install_requires=["numpy"],
     version="0.0.1",
-    # url="https://github.com/sonnerm/justmps",
+    # url="https://github.com/sonnerm/ttarray",
     author="Michael Sonner",
     author_email="sonnerm@gmail.com",
-    description="Library for matrix product states which are fully numpy compatible",
-    extras_require={"sparse linalg for dmrg":["scipy"],"interop with tenpy":["physics-tenpy"],"interop with quimb":["quimb"],"storing as hdf5":["hdf5"]},
+    description="Library for tensor train arrays which are compatible to numpy ndarray",
+    extras_require={"sparse linalg for dmrg":["scipy"],"interoperability with tenpy":["physics-tenpy"],"interoperability with quimb":["quimb"],"storing as hdf5":["hdf5"]},
 )

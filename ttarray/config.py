@@ -1,7 +1,7 @@
 DEFAULT_OPTIONS={
-"mp_algo":"exact",
+"compression":{},
+
+"dense_fallback":True,
 }
-LAZYNESS="auto"
-DENSE_FALLBACK="warn"
 ENABLE_QUIMB=False
 ENABLE_TENPY=False
