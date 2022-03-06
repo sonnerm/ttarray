@@ -1,6 +1,6 @@
 from .. import TensorTrainArray,TensorTrainSlice
+from ..dispatch import implement_function
 import numpy as np
-TensorTrainSlicePrototype=TensorTrainSlice([np.empty((1,1))])
 def _get_cluster_chi(shape,cluster,chi):
     if cluster is None:
         cluster=find_balanced_cluster(shape)
@@ -14,7 +14,7 @@ def empty(shape,dtype=np.float64, cluster=None,chi=1, inner_like=None, like=None
     '''
         Create an empty TensorTrainSlice or TensorTrainArray
     '''
-    if isinstance(like,TensorTrainSlice):
+    if isinstance(like,TensorTrainSlice) or like is TensorTrainSlice:
         if len(shape<2):
             raise ValueError("TensorTrainSlice has at least 2 dimensions.")
         else:
@@ -24,10 +24,13 @@ def empty(shape,dtype=np.float64, cluster=None,chi=1, inner_like=None, like=None
         chi=[1]+chi+[1]
     else:
         return NotImplemented
-    ms=[np.empty(s,dtype,order,like=inner_like) for s in zip(chi[1:],*cluster,chi[:-1])]
+    if inner_like is not None:
+        ms=[np.empty(s,dtype,order,like=inner_like) for s in zip(chi[1:],*cluster,chi[:-1])]
+    else:
+        ms=[np.empty(s,dtype,order) for s in zip(chi[1:],*cluster,chi[:-1])]
     return like.__class__.from_matrix_list(ms)
 def empty_slice(shape,dtype=np.float64, cluster=None,chi=1, inner_like=None):
-    return empty(shape,dtype,cluster,chi,inner_like,like=TensorTrainSlicePrototype)
+    return empty(shape,dtype,cluster,chi,inner_like,like=TensorTrainSlice)
 
 @implement_function(np.empty_like)
 def empty_like(prototype, dtype=None, shape=None, cluster=None, chi=None,inner_like=None):
@@ -47,17 +50,22 @@ def zeros(shape,dtype=np.float64,cluster=None,chi=1,inner_like=None,like=None):
         if len(shape<2):
             raise ValueError("TensorTrainSlice has at least 2 dimensions.")
         else:
-            chi=[shape[0]]+chi+[shape[-1]]
+            chi=[shape[0]]+list(chi)+[shape[-1]]
             shape=shape[1:-1]
     elif isinstance(like,TensorTrainArray) or like is None:
-        chi=[1]+chi+[1]
+        chi=[1]+list(chi)+[1]
     else:
         return np.zeros(shape,dtype,like=like)
-    ms=[np.zeros(s,dtype,like=inner_like) for s in zip(chi[1:],*cluster,chi[:-1])]
-    if like is not None:
-        return like.__class__.from_matrix_list(ms)
+    if inner_like is not None:
+        ms=[np.zeros([c1]+list(s)+[c2],dtype,like=inner_like) for s in zip(chi[1:],cluster,chi[:-1])]
     else:
-        return TensorTrainArray.from_matrix_list(ms)
+        ms=[np.zeros([c1]+list(s)+[c2],dtype) for c1,s,c2 in zip(chi[1:],cluster,chi[:-1])]
+    if like is None:
+        return TensorTrainArray.frommatrices(ms)
+    if like is TensorTrainSlice:
+        return TensorTrainSlice.frommatrices(ms)
+    else:
+        return like.__class__.frommatrices(ms)
 
 def zeros_slice(shape,dtype=np.float64,cluster=None,chi=1,inner_like=None):
     return zeros(shape,dtype,cluster,chi,inner_like,like=TensorTrainSlicePrototype)

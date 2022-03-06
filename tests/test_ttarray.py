@@ -1,4 +1,4 @@
 import pytest
-import justmps
+import ttarray
 def test_something():
     pass

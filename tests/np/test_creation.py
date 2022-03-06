@@ -3,10 +3,10 @@ from ttarray.np import zeros,zeros_like
 def test_zeros_ttarray(shape_cluster):
     shape,cluster=shape_cluster
     for dt in [complex,float,int]:
-        for chi in [1,2,list(range(1,len(cluster)))]:
+        for chi in [1,2,tuple(range(1,len(cluster)))]:
             ar=zeros(shape,dt,cluster,chi)
             if isinstance(chi,int):
-                chi=[chi]*(len(cluster)-1)
+                chi=tuple([chi]*(len(cluster)-1))
             assert ar.shape==shape
             assert ar.cluster==cluster
             assert ar.chi==chi

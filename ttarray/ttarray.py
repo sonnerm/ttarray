@@ -2,6 +2,7 @@ import numpy as np
 import copy
 from functools import reduce
 from .dispatch import dispatch_array_ufunc,dispatch_array_function
+from .raw import ttslice_to_array,array_to_ttslice
 import numpy.linalg as la
 from numpy.lib.mixins import NDArrayOperatorsMixin
 def _product(seq):
@@ -49,25 +50,27 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         self._update_attributes()
     def _update_attributes(self):
         self.L=len(self._data)
+        if self.L<1:
+            raise ValueError("There must be at least one matrix in the TensorTrainSlice")
         self.chi=tuple(m.shape[0] for m in self._data[1:])
-        self.cluster=[m.shape[1:-1] for m in self._data]
-        rank=len(ms[0].shape)
-        for m in ms:
-            if len(m.shape!=rank):
+        self.cluster=tuple(m.shape[1:-1] for m in self._data)
+        rank=len(self._data[0].shape)
+        for m in self._data:
+            if len(m.shape)!=rank:
                 raise ValueError("All matrices in a TensorTrainSlice need to have the same rank")
         shape=[self._data[0].shape[0]]
         shape.extend([_product(c[d] for c in self.cluster) for d in range(rank-2)])
         shape.append(self._data[-1].shape[-1])
         self.shape=tuple(shape)
-        self.dtype=np.common_type(self._data)
+        self.dtype=np.common_type(*self._data)
     @classmethod
     def frommatrices(cls,matrices):
         cls(matrices)
     def __array__(self,dtype=None):
-        return np.asarray(self.to_array(),dtype)
+        return np.asarray(self.toarray(),dtype)
     @classmethod
     def fromarray(cls,ar,dims=None,canonicalize=True,qr=la.qr):
-        return cls.from_matrix_list(array_to_ttslice(ar,cluster,qr))
+        return cls.frommatrices(array_to_ttslice(ar,cluster,qr))
     def toarray(self):
         return ttslice_to_array(self._data)
     def asmatrices(self):
@@ -110,22 +113,22 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
         self.L=self._tts.L
         self.chi=self._tts.chi
     def __array__(self,dtype=None):
-        return np.asarray(self.to_array(),dtype)
+        return np.asarray(self.toarray(),dtype)
     @classmethod
-    def from_array(cls,ar,cluster=None):
-        return cls(TensorTrainSlice.from_array(ar,dims,canonicalize))
-    def to_array(self,dtype=None,like=None):
-        return self._tts.to_array(dtype,like)[0,...,0]
+    def fromarray(cls,ar,cluster=None):
+        return cls(TensorTrainSlice.fromarray(ar,dims,canonicalize))
+    def toarray(self):
+        return self._tts.toarray()[0,...,0]
     @classmethod
-    def from_matrix_list(cls,mpl):
+    def frommatrices(cls,mpl):
         return cls(TensorTrainSlice(mpl))
     @classmethod
-    def from_matrix_product_slice(self,mps):
+    def fromslice(self,tts):
         return cls(mps)
-    def as_matrix_product_slice(self):
+    def asslice(self):
         return copy.copy(self._tts) #shallow copy necessary to protect invariants, stilll a view
-    def as_matrix_list(self):
-        return self._tts.as_matrix_list() #already does shallow copying
+    def asmatrices(self):
+        return self._tts.asmatrices() #already does shallow copying
     def __array_function__(self,func,types,args,kwargs):
         return _dispatch_array_function(func,types,args,kwargs)
     def __array_ufunc__(self,ufunc,method,args,kwargs):
