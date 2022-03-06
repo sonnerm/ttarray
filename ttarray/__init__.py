@@ -1,1 +1,1 @@
-from .mparray import MatrixProductBase,MatrixProductArray,MatrixProductSlice
+from .ttarray import TensorTrainBase,TensorTrainArray,TensorTrainSlice
