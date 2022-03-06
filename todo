@@ -1,6 +1,4 @@
-* Implement default configs properly
-* Modify MatrixProductArray.M
-* Implement MPS/MPA.L
+* Fail on wrong clustering
 * Implement derived routines:
   - (empty,ones,zeros,full) empty_like, ones_like, zeros_like,full_like
   - (eye) identity
@@ -15,7 +13,6 @@
   - (flip) fliplr,flipud
   - (flip,transpose) rot90
 
-* add optional argument chi
 * Implement exact routines (creation):
   * Product states
     - empty,ones,zeros,full
@@ -28,7 +25,7 @@
     - tri
     - tril,triu
     - vander
-  * Implementation from mpa
+  * Implementation from ttarray
     - meshgrid
     - diag,diagflat (but only k=1 so are easy, otherwise harder, but possible)
 
@@ -62,11 +59,10 @@
 * Implement additional functions:
   - truncate
   - recluster
+  - strange reshape => included in recluster
+  - canonicalize
   - svd_all
   - svd_one
-  - bond_entropy
-  - chi
-  - strange reshape
   - ttcross
   - random mps
 
@@ -87,7 +83,4 @@
   numpy.mat
   numpy.bmat
   numpy.asscalar (since it is deprecated)
-  numpy.ascontigousarray, numpy.asfortranarray, numpy.require, ...
-
-* Implementation not (yet) necessary
-  - shape
+  numpy.ascontigousarray, numpy.asfortranarray, numpy.require, ... doesn't make sense imho

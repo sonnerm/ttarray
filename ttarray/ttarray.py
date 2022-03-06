@@ -65,7 +65,7 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         self.dtype=np.common_type(*self._data)
     @classmethod
     def frommatrices(cls,matrices):
-        cls(matrices)
+        return cls(matrices)
     def __array__(self,dtype=None):
         return np.asarray(self.toarray(),dtype)
     @classmethod
@@ -130,6 +130,6 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
     def asmatrices(self):
         return self._tts.asmatrices() #already does shallow copying
     def __array_function__(self,func,types,args,kwargs):
-        return _dispatch_array_function(func,types,args,kwargs)
+        return dispatch_array_function(func,types,args,kwargs)
     def __array_ufunc__(self,ufunc,method,args,kwargs):
-        return _dispatch_array_ufunc(ufunc,method,args,kwargs)
+        return dispatch_array_ufunc(ufunc,method,args,kwargs)
