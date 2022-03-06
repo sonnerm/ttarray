@@ -1,3 +1,4 @@
+* Investigate possibilities to enable `like` keyword arg
 * Fail on wrong clustering
 * Implement derived routines:
   - (empty,ones,zeros,full) empty_like, ones_like, zeros_like,full_like

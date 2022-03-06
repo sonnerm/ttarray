@@ -2,11 +2,22 @@ from .. import TensorTrainArray,TensorTrainSlice
 from ..dispatch import implement_function
 from ..raw import find_balanced_cluster
 import numpy as np
-def _get_cluster_chi(shape,cluster,chi):
+def _get_cluster_chi_array(shape,cluster,chi):
     if cluster is None:
         cluster=find_balanced_cluster(shape)
     if isinstance(chi,int):
         chi=[chi]*(len(cluster)-1)
+    chi=tuple([1]+list(chi)+[1])
+    return cluster,chi
+
+def _get_cluster_chi_slice(shape,cluster,chi):
+    if len(shape)<2:
+        raise ValueError("TensorTrainSlice has at least 2 dimensions.")
+    if cluster is None:
+        cluster=find_balanced_cluster(shape[1:-1])
+    if isinstance(chi,int):
+        chi=[chi]*(len(cluster)-1)
+    chi=tuple([shape[0]]+list(chi)+[shape[-1]])
     return cluster,chi
 
 
@@ -15,15 +26,10 @@ def empty(shape,dtype=np.float64, cluster=None,chi=1, inner_like=None, like=None
     '''
         Create an empty TensorTrainSlice or TensorTrainArray
     '''
-    cluster,chi=_get_cluster_chi(shape,cluster,chi)
     if isinstance(like,TensorTrainSlice) or like is TensorTrainSlice:
-        if len(shape<2):
-            raise ValueError("TensorTrainSlice has at least 2 dimensions.")
-        else:
-            chi=[shape[0]]+list(chi)+[shape[-1]]
-            shape=shape[1:-1]
+        cluster,chi=_get_cluster_chi_slice(shape,cluster,chi)
     elif isinstance(like,TensorTrainArray) or like is None:
-        chi=[1]+list(chi)+[1]
+        cluster,chi=_get_cluster_chi_array(shape,cluster,chi)
     else:
         return np.empty(shape,dtype,like=like)
     ms=[np.empty([c1]+list(s)+[c2],dtype,like=inner_like) for c1,s,c2 in zip(chi[:-1],cluster,chi[1:])]
@@ -49,17 +55,12 @@ def empty_like(prototype, dtype=None, shape=None, cluster=None, chi=None,inner_l
 
 @implement_function(np.zeros)
 def zeros(shape,dtype=np.float64,cluster=None,chi=1,inner_like=None,like=None):
-    cluster,chi=_get_cluster_chi(shape,cluster,chi)
     if isinstance(like,TensorTrainSlice) or like is TensorTrainSlice:
-        if len(shape)<2:
-            raise ValueError("TensorTrainSlice has at least 2 dimensions.")
-        else:
-            chi=[shape[0]]+list(chi)+[shape[-1]]
-            shape=shape[1:-1]
+        cluster,chi=_get_cluster_chi_slice(shape,cluster,chi)
     elif isinstance(like,TensorTrainArray) or like is None:
-        chi=[1]+list(chi)+[1]
+        cluster,chi=_get_cluster_chi_array(shape,cluster,chi)
     else:
-        return np.zeros(shape,dtype,like=like)
+        return np.zeros(shape,dtype,like=like) # like is guaranteed not None
     if inner_like is not None:
         ms=[np.zeros([c1]+list(s)+[c2],dtype,like=inner_like) for c1,s,c2 in zip(chi[:-1],cluster,chi[1:])]
     else:
