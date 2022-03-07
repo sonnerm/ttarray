@@ -55,18 +55,17 @@ def test_zeros_ttslice_nocluster(shape):
     shape=tuple([2]+list(shape)+[3])
     for dt in [complex,float,int]:
         ar=zeros_slice(shape,dt)
-        # arnp=np.zeros(shape,dt,like=ar)
+        arnp=np.zeros(shape,dt,like=ar)
         assert ar.shape==shape
         assert ar.cluster==cluster
         assert ar.chi==tuple([1]*(len(cluster)-1))
-        # assert arnp.shape==shape
-        # assert arnp.cluster==cluster
-        # assert arnp.chi==tuple([1]*(len(cluster)-1))
-        # arb=np.array(arnp)
-        # assert type(arb)==np.ndarray
-        # assert arb.shape==shape
-        # assert (arb==np.zeros(shape,dtype=dt)).all()
-        #doesn't work since like keyword arg is not passed through numpy :(
+        assert arnp.shape==shape
+        assert arnp.cluster==cluster
+        assert arnp.chi==tuple([1]*(len(cluster)-1))
+        arb=np.array(arnp)
+        assert type(arb)==np.ndarray
+        assert arb.shape==shape
+        assert (arb==np.zeros(shape,dtype=dt)).all()
         arb=np.array(ar)
         assert type(arb)==np.ndarray
         assert arb.shape==shape

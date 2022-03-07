@@ -1,5 +1,5 @@
 from .. import TensorTrainArray,TensorTrainSlice
-from ..dispatch import implement_function
+from ..ttarray import implement_function
 from ..raw import find_balanced_cluster
 import numpy as np
 def _get_cluster_chi_array(shape,cluster,chi):
@@ -21,28 +21,22 @@ def _get_cluster_chi_slice(shape,cluster,chi):
     return cluster,chi
 
 
-@implement_function(np.empty)
-def empty(shape,dtype=np.float64, cluster=None,chi=1, like=None):
+@implement_function("empty","array")
+def empty(shape,dtype=np.float64, cluster=None,chi=1):
     '''
-        Create an empty TensorTrainSlice or TensorTrainArray
+        Create an empty TensorTrainArray
     '''
-    if isinstance(like,TensorTrainSlice) or like is TensorTrainSlice:
-        cluster,chi=_get_cluster_chi_slice(shape,cluster,chi)
-    elif isinstance(like,TensorTrainArray) or like is None:
-        cluster,chi=_get_cluster_chi_array(shape,cluster,chi)
-    else:
-        return np.empty(shape,dtype,like=like)
+    cluster,chi=_get_cluster_chi_array(shape,cluster,chi)
     ms=[np.empty([c1]+list(s)+[c2],dtype) for c1,s,c2 in zip(chi[:-1],cluster,chi[1:])]
-    if like is None:
-        return TensorTrainArray.frommatrices(ms)
-    if like is TensorTrainSlice:
-        return TensorTrainSlice.frommatrices(ms)
-    else:
-        return like.__class__.frommatrices(ms)
-def empty_slice(shape,dtype=np.float64, cluster=None,chi=1):
-    return empty(shape,dtype,cluster,chi,like=TensorTrainSlice)
+    return TensorTrainArray.frommatrices(ms)
 
-@implement_function(np.empty_like)
+@implement_function("empty","slice")
+def empty_slice(shape,dtype=np.float64, cluster=None,chi=1):
+    cluster,chi=_get_cluster_chi_slice(shape,cluster,chi)
+    ms=[np.empty([c1]+list(s)+[c2],dtype) for c1,s,c2 in zip(chi[:-1],cluster,chi[1:])]
+    return TensorTrainSlice.frommatrices(ms)
+
+@implement_function
 def empty_like(prototype, dtype=None, shape=None, cluster=None, chi=None):
     if shape is None:
         shape,cluster,chi=prototype.shape,prototype.cluster,prototype.chi
@@ -51,52 +45,54 @@ def empty_like(prototype, dtype=None, shape=None, cluster=None, chi=None):
     return empty(shape,dtype,cluster,chi,prototype)
 
 
-@implement_function(np.zeros)
+@implement_function("zeros","array")
 def zeros(shape,dtype=np.float64,cluster=None,chi=1,like=None):
-    if isinstance(like,TensorTrainSlice) or like is TensorTrainSlice:
-        cluster,chi=_get_cluster_chi_slice(shape,cluster,chi)
-    elif isinstance(like,TensorTrainArray) or like is None:
-        cluster,chi=_get_cluster_chi_array(shape,cluster,chi)
-    else:
-        return np.zeros(shape,dtype,like=like) # like is guaranteed not None
+    cluster,chi=_get_cluster_chi_array(shape,cluster,chi)
     ms=[np.zeros([c1]+list(s)+[c2],dtype) for c1,s,c2 in zip(chi[:-1],cluster,chi[1:])]
-        # not ideal, maybe numpy changes that like arg cannot be None
-    if like is None:
-        return TensorTrainArray.frommatrices(ms)
-    if like is TensorTrainSlice:
-        return TensorTrainSlice.frommatrices(ms)
-    else:
-        return like.__class__.frommatrices(ms)
+    return TensorTrainArray.frommatrices(ms)
 
+@implement_function("zeros","slice")
 def zeros_slice(shape,dtype=np.float64,cluster=None,chi=1):
-    return zeros(shape,dtype,cluster,chi,like=TensorTrainSlice)
+    cluster,chi=_get_cluster_chi_slice(shape,cluster,chi)
+    ms=[np.zeros([c1]+list(s)+[c2],dtype) for c1,s,c2 in zip(chi[:-1],cluster,chi[1:])]
+    return TensorTrainSlice.frommatrices(ms)
 
-@implement_function(np.zeros_like)
+@implement_function
 def zeros_like(prototype, dtype=None, shape=None, cluster=None, chi=None):
-    shape,cluster,chi=_get_shape_cluster_chi(shape,cluster,chi)
-    if shape is None:
-        shape,cluster,chi=prototype.shape,prototype.cluster,prototype.chi
     if dtype is None:
         dtype=prototype.dtype
-    return zeros(shape,dtype,cluster,chi,prototype)
+    if isinstance(prototype,TensorTrainArray):
+        if shape is None:
+            shape,cluster,chi=prototype.shape,prototype.cluster,prototype.chi
+        else:
+            cluster,chi=_get_cluster_chi_array(shape,cluster,chi)
+        return zeros(shape,dtype,cluster,chi)
+    elif isinstance(prototype,TensorTrainSlice):
+        if shape is None:
+            shape,cluster,chi=prototype.shape,prototype.cluster,prototype.chi
+        else:
+            cluster,chi=_get_cluster_chi_slice(shape,cluster,chi)
+        return zeros_slice(shape,dtype,cluster,chi)
+    else:
+        return NotImplemented
 
-@implement_function(np.ones)
-def ones(shape,dtype=np.float64,cluster=None,chi=1,like=None):
-    if isinstance(like,TensorTrainSlice) or like is TensorTrainSlice:
-        cluster,chi=_get_cluster_chi_slice(shape,cluster,chi)
-    elif isinstance(like,TensorTrainArray) or like is None:
-        cluster,chi=_get_cluster_chi_array(shape,cluster,chi)
-    else:
-        return np.ones(shape,dtype,like=like) # like is guaranteed not None
+@implement_function("ones","array")
+def ones(shape,dtype=np.float64,cluster=None,chi=1,*,order=None):
+    cluster,chi=_get_cluster_chi_array(shape,cluster,chi)
     ms=[np.ones([c1]+list(s)+[c2],dtype) for c1,s,c2 in zip(chi[:-1],cluster,chi[1:])]
-        # not ideal, maybe numpy changes that like arg cannot be None
-    if like is None:
-        return TensorTrainArray.frommatrices(ms)
-    if like is TensorTrainSlice:
-        return TensorTrainSlice.frommatrices(ms)
-    else:
-        return like.__class__.frommatrices(ms)
-@implement_function(np.ones_like)
+    for i in range(0,len(ms)-1):
+        ms[i]=ms[i]/chi[i+1]
+    return TensorTrainArray.frommatrices(ms)
+
+@implement_function("ones","slice")
+def ones_slice(shape,dtype=np.float64,cluster=None,chi=1,*,order=None):
+    cluster,chi=_get_cluster_chi_slice(shape,cluster,chi)
+    ms=[np.ones([c1]+list(s)+[c2],dtype) for c1,s,c2 in zip(chi[:-1],cluster,chi[1:])]
+    for i in range(0,len(ms)-1):
+        ms[i]=ms[i]/chi[i+1]
+    return TensorTrainSlice.frommatrices(ms)
+
+@implement_function
 def ones_like(prototype, dtype=None, shape=None, cluster=None, chi=None):
     if shape is None:
         shape,cluster,chi=prototype.shape,prototype.cluster,prototype.chi
@@ -104,71 +100,64 @@ def ones_like(prototype, dtype=None, shape=None, cluster=None, chi=None):
         dtype=prototype.dtype
     return ones(shape,dtype,cluster,chi,prototype)
 
-@implement_function(np.full)
-def full(shape,fill_value,dtype=None,cluster=None,chi=1,like=None):
-    shape,cluster,chi=_get_shape_cluster_chi(shape,cluster,chi)
-    if isinstance(like,TensorTrainSlice):
-        if len(shape<2):
-            raise ValueError("TensorTrainSlice has at least 2 dimensions.")
-        else:
-            chi=[shape[0]]+chi+[shape[-1]]
-            shape=shape[1:-1]
-    elif isinstance(like,TensorTrainArray):
-        chi=[1]+chi+[1]
-    else:
-        return NotImplemented
+@implement_function("full","array")
+def full(shape,fill_value,dtype=None,cluster=None,chi=1):
+    cluster,chi=_get_cluster_chi_array(shape,cluster,chi)
     val=fill_value**(1/(len(chi)+1))
-    ms=[np.full(s,val,dtype,order)/s[0]/s[-1] for s in zip(chi[1:],*cluster,chi[:-1])]
-    return like.__class__.from_matrix_list(ms)
+    ms=[np.full([c1]+list(s)+[c2],val,dtype) for c1,s,c2 in zip(chi[:-1],cluster,chi[1:])]
+    for i in range(0,len(ms)-1):
+        ms[i]=ms[i]/chi[i+1]
+    return TensorTrainArray.frommatrices(ms)
+@implement_function("full","slice")
+def full_slice(shape,fill_value,dtype=None,cluster=None,chi=1):
+    cluster,chi=_get_cluster_chi_slice(shape,cluster,chi)
+    val=fill_value**(1/(len(chi)+1))
+    ms=[np.full([c1]+list(s)+[c2],val,dtype) for c1,s,c2 in zip(chi[:-1],cluster,chi[1:])]
+    for i in range(0,len(ms)-1):
+        ms[i]=ms[i]/chi[i+1]
+    return TensorTrainSlice.frommatrices(ms)
 
-@implement_function(np.full_like)
+@implement_function
 def full_like(prototype, fill_value, dtype=None, shape=None, cluster=None, chi=None):
-    shape,cluster,chi=_get_shape_cluster_chi(shape,cluster,chi)
-    if shape is None:
-        shape,cluster,chi=prototype.shape,prototype.cluster,prototype.chi
-    if dtype is None:
-        dtype=prototype.dtype
-    return full(shape,fill_value,dtype,cluster,chi,prototype)
+    pass
 
-@implement_function(np.eye)
+@implement_function
 def eye(N, M=None, k=0, dtype=np.float64, cluster=None,chi=1, like=None):
     if k!=0:
         raise NotImplementedError("Diagonal mps with k!=0 are not yet supported")
     raise NotImplementedError("Not yet")
-@implement_function(np.identity)
+@implement_function
 def identity(n,dtype=None,cluster=None,chi=1, like=None):
     return eye(N=n,dtype=dtype,cluster=cluster,chi=chi,like=like)
 
-@implement_function(np.array)
-def array(ar, dtype=None, cluster=None, copy=True, ndmin=0, like=None):
-    '''
-        like defaults to TensorTrainArray
-    '''
-    if isinstance(like,TensorTrainArray) or like is None:
-        if isinstance(ar,TensorTrainArray):
-            #copy if necessary
-            pass
-        elif isinstance(ar,TensorTrainSlice):
-            #just recast, clustering is then a bit weird
-            pass
-        else:
-            ar=ar[None,...,None]
-            return like.__class__(array_to_ttslice(ar,find_balanced_cluster(ar.shape),la.qr))
-    elif isinstance(like,TensorTrainSlice) or like is TensorTrainSlice:
-        if isinstance(ar,TensorTrainSlice):
-            #copy if necessary
-            pass
-        elif isinstance(ar,TensorTrainArray):
-            #recluster then recast
-            pass
-        return like.__class__(array_to_ttslice(ar,find_balanced_cluster(ar.shape),la.qr))
+@implement_function("array","array")
+def array(ar, dtype=None, cluster=None, copy=True, ndmin=0):
+    if isinstance(ar,TensorTrainArray):
+        #copy if necessary
+        pass
+    elif isinstance(ar,TensorTrainSlice):
+        #just recast, clustering is then a bit weird
+        pass
     else:
-        return np.array(ar,dtype=dtype,copy=copy,ndim=ndim,like=like) #fallback to numpy
+        ar=ar[None,...,None]
+        return like.__class__(array_to_ttslice(ar,find_balanced_cluster(ar.shape),la.qr))
+@implement_function("array","slice")
 def slice(ar, dtype=None, cluster=None, copy=True, ndmin=0):
-    return array(ar,dtype,cluster,copy,ndim,like=TensorTrainSlice)
-@implement_function(np.asarray)
-def asarray(ar, dtype=None,cluster=None,like=None):
-    array(ar,dtype,cluster=cluster,like=like,copy=False)
+    if isinstance(ar,TensorTrainSlice):
+        #copy if necessary
+        pass
+    elif isinstance(ar,TensorTrainArray):
+        #recluster then recast
+        pass
+    else:
+        pass
+
+@implement_function("asarray","array")
+def asarray(ar, dtype=None,cluster=None):
+    array(ar,dtype,cluster=cluster,copy=False)
+@implement_function("asarray","slice")
+def asslice(ar, dtype=None,cluster=None,like=None):
+    slice(ar,dtype,cluster=cluster,copy=False)
 
 @implement_function(np.asanyarray)
 def asanyarray(ar, dtype=None,cluster=None,like=None):

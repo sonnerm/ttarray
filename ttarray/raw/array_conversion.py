@@ -38,7 +38,6 @@ def array_to_ttslice(a,cluster,decomposition):
         Converts an array to a ttslice with a given cluster using a given decomposition
     '''
     mps=[]
-    print(a.shape)
     car=a.reshape(a.shape[0],-1)
     for ds in cluster:
         car=car.reshape((car.shape[0]*_product(ds),-1))
@@ -58,7 +57,6 @@ def ttslice_to_array(ttslice):
     trp[1:-1:2]=range(1,r+1)
     trp[2::2]=range(r+1,2*r+1)
     trp[-1]=2*r+1
-    print(trp)
     for m in ttslice[1:]:
         ret=np.tensordot(ret,m,axes=((-1),(0)))
         ret=ret.transpose(trp)

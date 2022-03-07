@@ -1,10 +1,35 @@
 import numpy as np
 import copy
 from functools import reduce
-from .dispatch import dispatch_array_ufunc,dispatch_array_function
 from .raw import ttslice_to_array,array_to_ttslice
 import numpy.linalg as la
 from numpy.lib.mixins import NDArrayOperatorsMixin
+HANDLER_FUNCTION_ARRAY={}
+HANDLER_UFUNC_ARRAY={}
+HANDLER_FUNCTION_SLICE={}
+HANDLER_UFUNC_SLICE={}
+def implement_function(func=None,selector=None):
+    def implement_function_decorator(f):
+        if func is None:
+            fname=f.__name__
+        else:
+            fname=func
+        if selector=="array" or selector is None:
+            HANDLER_FUNCTION_ARRAY[fname]=f
+        if selector=="slice" or selector is None:
+            HANDLER_FUNCTION_SLICE[fname]=f
+        return f
+    return implement_function_decorator
+def implement_ufunc(ufunc,method,selector=None):
+    def implement_ufunc_decorator(f):
+        if selector=="array" or selector is None:
+            HANDLER_UFUNC_ARRAY[(func,method)]=f
+        if selector=="slice" or selector is None:
+            HANDLER_UFUNC_SLICE[(func,method)]=f
+        return f
+    return implement_ufunc_decorator
+
+
 def _product(seq):
     return reduce(lambda a,b:a*b,seq,1)
 def _flatten_mps(mpsl):
@@ -79,9 +104,11 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         '''
         return list(self._data) #shallow copy to protect invariants
     def __array_function__(self,func,types,args,kwargs):
-        return dispatch_array_function(func,types,args,kwargs)
+        ret=HANDLER_FUNCTION_SLICE[func.__name__](*args,**kwargs)
+        return ret
     def __array_ufunc__(self,ufunc,method,args,kwargs):
-        return dispatch_array_ufunc(ufunc,method,args,kwargs)
+        ret=HANDLER_UFUNC_SLICE[(ufunc,method)](*args,**kwargs)
+        return ret
 
 class _TensorTrainArrayData:
     def __init__(self,tta):
@@ -130,6 +157,8 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
     def asmatrices(self):
         return self._tts.asmatrices() #already does shallow copying
     def __array_function__(self,func,types,args,kwargs):
-        return dispatch_array_function(func,types,args,kwargs)
+        ret=HANDLER_FUNCTION_ARRAY[func.__name__](*args,**kwargs)
+        return ret
     def __array_ufunc__(self,ufunc,method,args,kwargs):
-        return dispatch_array_ufunc(ufunc,method,args,kwargs)
+        ret=HANDLER_UFUNC_SLICE[(ufunc,method)](*args,**kwargs)
+        return ret

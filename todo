@@ -1,7 +1,8 @@
-* Investigate possibilities to enable `like` keyword arg
+* test/implement the *_like methods
+
+
 * Fail on wrong clustering
 * Implement derived routines:
-  - (empty,ones,zeros,full) empty_like, ones_like, zeros_like,full_like
   - (eye) identity
   - (array) asarray,asanyarray,frombuffer,fromfile,fromiter,fromstring
   - shape
@@ -13,10 +14,13 @@
   - (insert) append
   - (flip) fliplr,flipud
   - (flip,transpose) rot90
+* Implemented/Tested routines:
+  - empty,ones,zeros
 
 * Implement exact routines (creation):
   * Product states
-    - empty,ones,zeros,full
+    - full
+    - empty_like, ones_like, zeros_like,full_like
     - eye
   * Decomposition from dense (for now at least)
     - array
