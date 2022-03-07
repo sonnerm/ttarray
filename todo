@@ -16,10 +16,10 @@
   - (flip,transpose) rot90
 * Implemented/Tested routines:
   - empty,ones,zeros,full
+  - empty_like,ones_like,zeros_like,full_like
 
 * Implement exact routines (creation):
   * Product states
-    - empty_like, ones_like, zeros_like,full_like
     - eye
   * Decomposition from dense (for now at least)
     - array
