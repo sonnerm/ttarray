@@ -1,5 +1,5 @@
 import numpy as np
-from ttarray.np import empty,empty_like,empty_slice
+from ttarray import empty,empty_like,empty_slice
 def test_empty_ttarray(shape_cluster):
     shape,cluster=shape_cluster
     for dt in [complex,float,int]:

@@ -1,6 +1,6 @@
 import numpy as np
 from .. import check_ttarray_dense,check_ttslice_dense
-from ttarray.np import full,full_like,full_slice
+from ttarray import full,full_like,full_slice
 import pytest
 ARRAY_PROTOTYPE=full((1,),5,int,((1,),),2)
 SLICE_PROTOTYPE=full_slice((2,2,3),3.1459,float,((2,),),2)
