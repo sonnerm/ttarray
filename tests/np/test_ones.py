@@ -45,11 +45,11 @@ def test_ones_ttarray_nocluster(shape):
         arb=np.array(arnp)
         assert type(arb)==np.ndarray
         assert arb.shape==shape
-        assert (arb==np.ones(shape,dtype=dt)).all()
+        assert arb==pytest.approx(np.ones(shape,dtype=dt))
         arb=np.array(ar)
         assert type(arb)==np.ndarray
         assert arb.shape==shape
-        assert (arb==np.ones(shape,dtype=dt)).all()
+        assert arb==pytest.approx(np.ones(shape,dtype=dt))
 def test_ones_ttslice_nocluster(shape):
     shape,cluster=shape
     shape=tuple([2]+list(shape)+[3])
@@ -65,7 +65,7 @@ def test_ones_ttslice_nocluster(shape):
         arb=np.array(arnp)
         assert type(arb)==np.ndarray
         assert arb.shape==shape
-        assert (arb==np.ones(shape,dtype=dt)).all()
+        assert arb==pytest.approx(np.ones(shape,dtype=dt))
         arb=np.array(ar)
         assert type(arb)==np.ndarray
         assert arb.shape==shape

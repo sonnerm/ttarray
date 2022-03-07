@@ -1,12 +1,11 @@
 import numpy as np
 from ttarray.np import full,full_like,full_slice
 import pytest
-pytestmark=pytest.mark.skip
 def test_full_ttarray(shape_cluster):
     shape,cluster=shape_cluster
-    for dt in [complex,float,int]:
+    for dt,val in [(complex,np.pi+np.e*1.0j),(float,3.1459),(int,5)]:
         for chi in [1,2,tuple(range(1,len(cluster)))]:
-            ar=full(shape,dt,cluster,chi)
+            ar=full(shape,val,dt,cluster,chi)
             if isinstance(chi,int):
                 chi=tuple([chi]*(len(cluster)-1))
             assert ar.shape==shape
@@ -15,13 +14,13 @@ def test_full_ttarray(shape_cluster):
             arb=np.array(ar) #back conversion
             assert type(arb)==np.ndarray
             assert arb.shape==shape
-            assert arb==pytest.approx(np.full(shape,dtype=dt))
+            assert arb==pytest.approx(np.full(shape,val,dtype=dt))
 def test_full_ttslice(shape_cluster):
     shape,cluster=shape_cluster
     shape=tuple([2]+list(shape)+[3])
-    for dt in [complex,float,int]:
+    for dt,val in [(complex,np.pi+np.e*1.0j),(float,3.1459),(int,5)]:
         for chi in [1,2,tuple(range(1,len(cluster)))]:
-            ar=full_slice(shape,dt,cluster,chi)
+            ar=full_slice(shape,val,dt,cluster,chi)
             if isinstance(chi,int):
                 chi=tuple([chi]*(len(cluster)-1))
             assert ar.shape==shape
@@ -30,13 +29,13 @@ def test_full_ttslice(shape_cluster):
             arb=np.array(ar) #back conversion
             assert type(arb)==np.ndarray
             assert arb.shape==shape
-            assert arb==pytest.approx(np.full(shape,dtype=dt))
+            assert arb==pytest.approx(np.full(shape,val,dtype=dt))
 
 def test_full_ttarray_nocluster(shape):
     shape,cluster=shape
-    for dt in [complex,float,int]:
-        ar=full(shape,dt)
-        arnp=np.full(shape,dt,like=ar)
+    for dt,val in [(complex,np.pi+np.e*1.0j),(float,3.1459),(int,5)]:
+        ar=full(shape,val,dt)
+        arnp=np.full(shape,val,dt,like=ar)
         assert ar.shape==shape
         assert ar.cluster==cluster
         assert ar.chi==tuple([1]*(len(cluster)-1))
@@ -46,17 +45,17 @@ def test_full_ttarray_nocluster(shape):
         arb=np.array(arnp)
         assert type(arb)==np.ndarray
         assert arb.shape==shape
-        assert (arb==np.full(shape,dtype=dt)).all()
+        assert arb==pytest.approx(np.full(shape,val,dtype=dt))
         arb=np.array(ar)
         assert type(arb)==np.ndarray
         assert arb.shape==shape
-        assert (arb==np.full(shape,dtype=dt)).all()
+        assert arb==pytest.approx(np.full(shape,val,dtype=dt))
 def test_full_ttslice_nocluster(shape):
     shape,cluster=shape
     shape=tuple([2]+list(shape)+[3])
-    for dt in [complex,float,int]:
-        ar=full_slice(shape,dt)
-        arnp=np.full(shape,dt,like=ar)
+    for dt,val in [(complex,np.pi+np.e*1.0j),(float,3.1459),(int,5)]:
+        ar=full_slice(shape,val,dt)
+        arnp=np.full(shape,val,dt,like=ar)
         assert ar.shape==shape
         assert ar.cluster==cluster
         assert ar.chi==tuple([1]*(len(cluster)-1))
@@ -66,8 +65,8 @@ def test_full_ttslice_nocluster(shape):
         arb=np.array(arnp)
         assert type(arb)==np.ndarray
         assert arb.shape==shape
-        assert (arb==np.full(shape,dtype=dt)).all()
+        assert arb==pytest.approx(np.full(shape,val,dtype=dt))
         arb=np.array(ar)
         assert type(arb)==np.ndarray
         assert arb.shape==shape
-        assert arb==pytest.approx(np.full(shape,dtype=dt)) #there is a division ...
+        assert arb==pytest.approx(val,np.full(shape,val,dtype=dt)) #there is a division ...
