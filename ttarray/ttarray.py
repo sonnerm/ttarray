@@ -87,7 +87,7 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         shape.extend([_product(c[d] for c in self.cluster) for d in range(rank-2)])
         shape.append(self._data[-1].shape[-1])
         self.shape=tuple(shape)
-        self.dtype=np.common_type(*self._data)
+        self.dtype=np.result_type(*self._data)
     @classmethod
     def frommatrices(cls,matrices):
         return cls(matrices)
