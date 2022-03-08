@@ -160,21 +160,28 @@ def identity(n,dtype=None,cluster=None,chi=1):
     return eye(N=n,dtype=dtype,cluster=cluster,chi=chi)
 
 @implement_function("array","array")
-def array(ar, dtype=None, cluster=None, copy=True,ndim=0):
+def array(ar, dtype=None, cluster=None, copy=True,*,ndim=0):
     if isinstance(ar,TensorTrainArray):
         #copy if necessary
         pass
     elif isinstance(ar,TensorTrainSlice):
         #just recast, clustering is then a bit weird, recluster afterwards
         arm=ar.asmatrices()
-        ret=TensorTrainArray.frommatrices()
-        ret.recluster(cluster)
+        if not copy:
+            arm[0]=arm[0][None,...]
+        else:
+            pass
+        ret=TensorTrainArray.frommatrices(arm)
+        if cluster is not None:
+            ret.recluster(cluster)
         return ret
     else:
-        ar=ar[None,...,None]
-        return TensorTrainArray.frommatrices(array_to_ttslice(ar,find_balanced_cluster(ar.shape),trivial_decomposition))
+        sh=np.shape(ar)
+        ar=np.reshape(ar,tuple([1]+list(sh)+[1]))
+        tts=array_to_ttslice(ar,find_balanced_cluster(sh),trivial_decomposition)
+        return TensorTrainArray.frommatrices(tts)
 @implement_function("array","slice")
-def slice(ar, dtype=None, cluster=None, copy=True,ndim=0):
+def slice(ar, dtype=None, cluster=None, copy=True,*,ndim=0):
     if isinstance(ar,TensorTrainSlice):
         #copy if necessary
         pass
@@ -182,7 +189,8 @@ def slice(ar, dtype=None, cluster=None, copy=True,ndim=0):
         #recluster then recast
         pass
     else:
-        return TensorTrainSlice.frommatrices(array_to_ttslice(ar,find_balanced_cluster(ar.shape),trivial_decomposition))
+        tts=array_to_ttslice(ar,find_balanced_cluster(np.shape(ar)),trivial_decomposition)
+        return TensorTrainSlice.frommatrices(tts)
 
 @implement_function("asarray","array")
 def asarray(ar, dtype=None,cluster=None):
@@ -206,3 +214,34 @@ def frombuffer(buffer, dtype=float, count=- 1, offset=0, cluster=None):
 @implement_function("frombuffer","slice")
 def frombuffer_slice(buffer, dtype=float, count=- 1, offset=0, cluster=None):
     slice(np.frombuffer(buffer,dtype,count,offset),dtype=dtype,cluster=cluster,copy=False)
+
+@implement_function()
+def copy(a,*,order=None,subok=None):
+    if isinstance(a,TensorTrainArray) or isinstance(a,TensorTrainSlice):
+        return a.__class__.frommatrices([np.copy(x) for x in a.asmatrices()])
+    else:
+        return NotImplemented
+
+@implement_function("arange","array")
+def arange(*args, **kwargs):
+    #wild hack to deal with optional arguments
+    if len(args)==5:
+        array(np.arange(*args[:-1],**kwargs),cluster=args[-1])
+    elif "cluster" in kwargs.keys():
+        cluster=kwargs["cluster"]
+        del kwargs["cluster"]
+        array(np.arange(*args,**kwargs),cluster=cluster)
+    else:
+        array(np.arange(*args,**kwargs))
+
+@implement_function("arange","slice")
+def _arange_slice():
+    raise TypeError("TensorTrainSlice have at least rank 2, cannot construct a TensorTrainSlice from arange")
+
+@implement_function("linspace","array")
+def linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis=0,cluster=None):
+    array(np.linspace(start,stop,num,endpoint,retstep,dtype,axis),cluster=None)
+
+@implement_function("linspace","slice")
+def linspace_slice(start,stop,step):
+    slice(np.linspace(start,stop,num,endpoint,retstep,dtype,axis),cluster=None)

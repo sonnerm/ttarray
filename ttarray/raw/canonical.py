@@ -16,10 +16,14 @@ def is_canonical(ttslice,center=-1,eps=1e-8):
                 return False
     return True
 
-def canonicalize(ttslice):
+def canonicalize(ttslice,center=-1):
     '''
-        Bring ttslice to canonical form
+        Bring ttslice to canonical form with center
     '''
+    cshape=car.shape
+    car=ttslice[0].reshape((-1,car.shape[-1]))
+
+
 def calculate_singular_values(ttslice,svd=la.svd):
     '''
         Assume ttslice is left-canonical and extract the singular values

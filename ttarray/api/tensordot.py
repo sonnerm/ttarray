@@ -1,7 +1,6 @@
 import numpy as np
 from .. import implement_function
-@implement_function(np.tensordot)
-@wrap_function
+@implement_function
 def tensordot(a,b,axes=2):
     if isinstance(a,MatrixProductBase):
         if isinstance(b,MatrixProductBase):

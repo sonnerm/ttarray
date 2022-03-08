@@ -1,5 +1,5 @@
 from ..dispatch import implement_function
-@implement_function(np.shape)
+@implement_function()
 def shape(ar):
     return ar.shape
 def cluster(ar):

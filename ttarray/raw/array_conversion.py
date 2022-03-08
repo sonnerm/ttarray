@@ -1,7 +1,7 @@
 import numpy as np
 import functools
 def trivial_decomposition(M):
-    return np.eye(M.shape[0],like=M),M
+    return np.eye(M.shape[0],dtype=M.dtype,like=M),M
 def find_balanced_cluster(shape):
     if len(shape)==0:
         return ((),)
