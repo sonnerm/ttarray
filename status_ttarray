@@ -1,0 +1,41 @@
+Finish this list ....
+* Implemented
+  * shape, cluster, chi, dtype
+
+* Todo
+  * easy
+    - ndim, size, itemsize, nbytes, base
+    - .astype
+    - __repr__, __str__
+    - __float__, __int__, __complex__
+    - .T
+    - .real, .imag
+    - dump, dumps
+    - fill
+  * weird ufunc protocol:
+    - __array_wrap__, but not sure if smart
+    - __array_priority__
+
+  * Indexing
+    - __setitem__ (+slicing)
+    - __getitem__ (+slicing)
+    - __iter__
+    - item, itemset
+    - .flat
+  * inefficient
+    - __contains__ (although inefficient)
+
+  * with equivalent function
+    - any,all,argmax,argmin,argpartition,argsort
+    - choose, clip, compress
+    - conj, conjugate
+    - copy
+    - cumprod, cumsum, diagonal
+    - flatten
+    - sum
+  * far off
+    - __class_getitem__
+  * not implementing
+    - byteswap
+    - ctypes
+    - tolist #confusing with asmatrices, frommatrices

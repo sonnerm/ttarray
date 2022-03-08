@@ -10,6 +10,7 @@ SHAPE_CLUSTER_R1+=[((2,),((2,),)),((2,),((1,),(2,),(1,))),((4,),((4,),)),((4,),(
 
 SHAPE_CLUSTER_R2=[((1,1),((1,1),)),((1,1),((1,1),(1,1))),((1,1),((1,1),(1,1),(1,1),(1,1)))]
 SHAPE_CLUSTER_R2+=[((2,2),((2,2),)),((2,2),((2,1),(1,2))),((2,2),((1,1),(2,1),(1,2),(1,1)))]
+SHAPE_CLUSTER_R2+=[((4,4),((2,2),(2,2))),((8,4),((2,2),(2,1),(2,2))),((4,8),((1,2),(2,2),(2,2)))]
 SHAPE_CLUSTER_R3=[((1,1,1),((1,1,1),)),((1,1,1),((1,1,1),(1,1,1))),((1,1,1),((1,1,1),(1,1,1),(1,1,1),(1,1,1)))]
 
 SHAPE_R0=[((),((),))]
@@ -21,19 +22,8 @@ SHAPE_R2+=[((8,16),((2,2),(2,2),(2,2),(1,2)))]
 SHAPE_R3=[((1,1,1),((1,1,1),))]
 SHAPE_CLUSTER=SHAPE_CLUSTER_R0+SHAPE_CLUSTER_R1+SHAPE_CLUSTER_R2+SHAPE_CLUSTER_R3
 SHAPE=SHAPE_R0+SHAPE_R1+SHAPE_R2+SHAPE_R3
-@pytest.fixture(params=SHAPE_CLUSTER_R0)
-def shape_cluster_r0(request):
-    return request.param
-
 @pytest.fixture(params=SHAPE_CLUSTER_R1)
 def shape_cluster_r1(request):
-    return request.param
-@pytest.fixture(params=SHAPE_CLUSTER_R2)
-def shape_cluster_r2(request):
-    return request.param
-
-@pytest.fixture(params=SHAPE_CLUSTER_R3)
-def shape_cluster_r3(request):
     return request.param
 
 @pytest.fixture(params=SHAPE_CLUSTER)
@@ -42,6 +32,10 @@ def shape_cluster(request):
 
 @pytest.fixture(params=SHAPE)
 def shape(request):
+    return request.param
+
+@pytest.fixture(params=SHAPE_R1)
+def shape_r1(request):
     return request.param
 
 @pytest.fixture(scope="function")

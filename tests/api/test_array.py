@@ -51,7 +51,7 @@ def test_ttarray_ndarray_nocluster(shape):
         check_ttarray_dense(ar2,npar2,cluster,chi)
         check_ttarray_dense(ar3,npar2,cluster,chi)
         check_ttarray_dense(ar4,npar2,cluster,chi)
-def test_ttarray_ndarray_nocluster(shape):
+def test_ttslice_ndarray_nocluster(shape):
     shape,cluster=shape
     shape=tuple([3]+list(shape)+[2])
     chi=_calc_chi(cluster,3,2)

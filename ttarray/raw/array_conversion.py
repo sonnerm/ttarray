@@ -1,7 +1,10 @@
 import numpy as np
 import functools
 def trivial_decomposition(M):
-    return np.eye(M.shape[0],dtype=M.dtype,like=M),M
+    if M.shape[0]<=M.shape[1]:
+        return np.eye(M.shape[0],dtype=M.dtype,like=M),M
+    else:
+        return M,np.eye(M.shape[1],dtype=M.dtype,like=M)
 def find_balanced_cluster(shape):
     if len(shape)==0:
         return ((),)
@@ -32,15 +35,23 @@ def find_balanced_cluster(shape):
             c.extend([1]*(maxlen-len(c)))
     return tuple(zip(*cluster))
 def _product(seq):
-    return functools.reduce(lambda x,y:x*y,seq,1)
+    return functools.reduce(lambda x,y:x*y,seq,1) # python unbounded ints ftw!
+
 def array_to_ttslice(a,cluster,decomposition):
     '''
         Converts an array to a ttslice with a given cluster using a given decomposition
     '''
     mps=[]
+    enddim=a.shape[-1]
+    cshape=a.shape[1:-1]
+    tpose=[0]+list(range(1,2*len(cshape)+1,2))+list(range(2,2*len(cshape)+2,2))+[2*len(cshape)+1]
     car=a.reshape(a.shape[0],-1)
     for ds in cluster:
-        car=car.reshape((car.shape[0]*_product(ds),-1))
+        nshape=(car.shape[0],)+sum(((d,cs//d) for d,cs in zip(ds,cshape)),())+(enddim,)
+        car=np.reshape(car,nshape)
+        car=np.transpose(car,tpose)
+        cshape=tuple((cs//d) for d,cs in zip(ds,cshape))
+        car=car.reshape(car.shape[0]*_product(ds),-1)
         q,r=decomposition(car)
         mps.append(q.reshape((-1,)+ds+(q.shape[1],)))
         car=r

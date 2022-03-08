@@ -177,8 +177,14 @@ def array(ar, dtype=None, cluster=None, copy=True,*,ndim=0):
         return ret
     else:
         sh=np.shape(ar)
+        if cluster is None:
+            cluster=find_balanced_cluster(sh)
+        print(ar)
         ar=np.reshape(ar,tuple([1]+list(sh)+[1]))
-        tts=array_to_ttslice(ar,find_balanced_cluster(sh),trivial_decomposition)
+        print(ar)
+        if dtype is not None:
+            ar=ar.astype(dtype=dtype,copy=False)#change dtype if necessary
+        tts=array_to_ttslice(ar,cluster,trivial_decomposition)
         return TensorTrainArray.frommatrices(tts)
 @implement_function("array","slice")
 def slice(ar, dtype=None, cluster=None, copy=True,*,ndim=0):
@@ -189,31 +195,35 @@ def slice(ar, dtype=None, cluster=None, copy=True,*,ndim=0):
         #recluster then recast
         pass
     else:
-        tts=array_to_ttslice(ar,find_balanced_cluster(np.shape(ar)),trivial_decomposition)
+        if cluster is None:
+            cluster=find_balanced_cluster(np.shape(ar)[1:-1])
+        if dtype is not None:
+            ar=ar.astype(dtype=dtype,copy=False)#change dtype if necessary
+        tts=array_to_ttslice(ar,cluster,trivial_decomposition)
         return TensorTrainSlice.frommatrices(tts)
 
 @implement_function("asarray","array")
 def asarray(ar, dtype=None,cluster=None):
-    array(ar,dtype,cluster=cluster,copy=False)
+    return array(ar,dtype,cluster=cluster,copy=False)
 @implement_function("asarray","slice")
 def asslice(ar, dtype=None,cluster=None):
-    slice(ar,dtype,cluster=cluster,copy=False)
+    return slice(ar,dtype,cluster=cluster,copy=False)
 
 @implement_function("asanyarray","array")
 def asanyarray(ar, dtype=None,cluster=None):
-    array(ar,dtype,cluster=cluster,copy=False)
+    return array(ar,dtype,cluster=cluster,copy=False)
 
 @implement_function("asanyarray","slice")
 def asanyslice(ar, dtype=None,cluster=None):
-    slice(ar,dtype,cluster=cluster,copy=False)
+    return slice(ar,dtype,cluster=cluster,copy=False)
 
 @implement_function("frombuffer","array")
 def frombuffer(buffer, dtype=float, count=- 1, offset=0, cluster=None):
-    array(np.frombuffer(buffer,dtype,count,offset),dtype=dtype,cluster=cluster,copy=False)
+    return array(np.frombuffer(buffer,dtype,count,offset),dtype=dtype,cluster=cluster,copy=False)
 
 @implement_function("frombuffer","slice")
 def frombuffer_slice(buffer, dtype=float, count=- 1, offset=0, cluster=None):
-    slice(np.frombuffer(buffer,dtype,count,offset),dtype=dtype,cluster=cluster,copy=False)
+    return slice(np.frombuffer(buffer,dtype,count,offset),dtype=dtype,cluster=cluster,copy=False)
 
 @implement_function()
 def copy(a,*,order=None,subok=None):

@@ -1,3 +1,12 @@
+* Priorities:
+  - array needs to work
+  - canonicalize + raw functions
+  - truncate
+  - tensordot
+  @@@@ Usable milestone
+  - add, mul
+
+  Think about ownership
 * Ignored parts of numpy api
   * String functions (numpy.char)
   * numpy.ctypeslib
@@ -10,20 +19,19 @@
   * maskedarray is a bit pointless probably
   * io: load/save has own format (probably hdf5 style)
 * To assess:
+  * ndarray api
   * polynomial
   * set
   * sorting, searching
   * statistics
-
+* Functional
+  * todo (if possible ?)
+    * apply_along_axis
+    * apply_over_axis
+    * piecewise
 * Misc routines:
   * todo (easy)
     * may_share_memory, shares_memory
-* Indexing
-  * todo
-    * __setitem__ (+slicing)
-    * __getitem__ (+slicing)
-    * __iter__
-    * ndarray.flat
 * I/O
   * Implemented
     * asmatrices, frommatrices, toarray, fromarray
