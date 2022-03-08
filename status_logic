@@ -1,0 +1,21 @@
+* Todo
+  * easy
+    - isscalar
+  * possible efficiently (i think)
+    - isfinite, isinf, isnan, isnat
+    - all, any (because only zero evaluates to false)
+    - isneginf, isposinf
+    - iscomplex, iscomplexobj
+    - isreal, isrealobj
+  * possible ufuncs
+    - logical_and, logical_or, logical_not, logical_xor
+  * use norm for comparison
+    - allclose
+  * maybe
+    -isclose
+  * hard ufunc
+    - greater, greater_equal, less, less_equal, equal, not_equal
+  * hard
+    -array_equal, array_equiv
+  * impossible since deprecated and not __array_function__
+    - isfortran

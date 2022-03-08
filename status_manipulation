@@ -1,0 +1,26 @@
+* Implemented
+  - shape
+* Todo
+  * easy
+    - transpose, moveaxis, rollaxis, swapaxes ndarray.T,
+    - asfarray
+    - copyto
+    - (ndarray.flat)
+    - repeat, tile (add matrix to either end)
+  * doable, warn increase bd
+    - reshape, ravel, ndarray.flatten, atleast_1d, atleast_2d, atleast_3d, expand_dims, squeeze
+    - flip, fliplr,flipud
+    - broadcast_to, broadcast (?), broadcast_arrays (?)
+    - rot90
+  * difficult, warn if incommensurate
+    - concatenate, stack, block, vstack, hstack, dstack, row_stack, column_stack
+    - split, vsplit, hsplit, dsplit, array_split
+    - insert, append, delete
+    - resize and ndarray.resize
+    - trim_zeros (if there are any)
+  * dense fallback for now
+    - roll
+    - unique
+
+* Cannot support (no __array_function__ support)
+  * asarray_chkfinite

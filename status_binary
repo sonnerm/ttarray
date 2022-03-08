@@ -1,0 +1,7 @@
+* Todo
+  * ufuncs, via dense for now
+    - bitwise_and, bitwise_or, bitwise_xor
+    - invert
+    - left_shift, right_shift
+  * possible i guess
+    - packbits, unpackbits

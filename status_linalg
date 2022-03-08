@@ -1,0 +1,19 @@
+* Todo
+  * easy
+    - dot, multidot, vdot, inner, outer, tensordot, einsum (possible delegate), einsum_path
+    - linalg.matrix_power
+    - kron
+    - linalg.norm
+    - trace
+  * no idea
+    - linalg.cholesky, linalg.qr,
+    - linalg.cond
+    - linalg.det, linalg.slogdet
+    - linalg.matrix_rank
+    - linalg.solve, linalg.tensorsolve
+    - linalg.lstsq
+    - linalg.inv, linalg.pinv,linalg.tensorinv
+  * dense workaround (desirable ?) probably not
+    - linalg.svd, linalg,eig(h), linalg.eigvals(h)
+  * ufuncs
+    - matmul

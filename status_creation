@@ -1,0 +1,36 @@
+* Tested:
+  - empty,ones,zeros,full
+  - empty_like,ones_like,zeros_like,full_like
+* Implemented:
+  - array,asarray,asanyarray
+  - frombuffer,fromiter,fromstring
+* Todo:
+  * diagonal
+    - eye, identity, diag, diagflat
+  * Decomposition from dense (for now at least)
+    - arange,linspace,logspace,geomspace
+    - fromfunction (for now, later maybe ttcross)
+    - tri
+    - tril,triu
+    - vander
+  * easy
+    - copy
+    - meshgrid
+    - asfarray
+* Not supported (return not implemented?)
+  numpy.asmatrix
+  numpy.mat
+  numpy.bmat
+  numpy.asscalar (since it is deprecated)
+  numpy.ascontigousarray, numpy.asfortranarray, numpy.require, ... doesn't make sense imho
+  numpy.core.records.array
+  numpy.core.records.fromarrays
+  numpy.core.records.fromrecords
+  numpy.core.records.fromstring
+  numpy.core.records.fromfile
+  numpy.core.defchararray.array
+  numpy.core.defchararray.asarray
+  numpy.mgrid
+  numpy.ogrid
+* Different semantics
+  *fromfile, tofile

@@ -1,0 +1,54 @@
+* Todo
+  * easy ufuncs
+    - add, subtract
+    - multiply, square
+    - degrees, radians
+    - deg2rad, rad2deg whatever the difference is
+    - power, float_power (at least integer)
+    - conj, conjugate, real, imag
+
+  * maybe ufuncs
+    - divide, true_divide, reciprocal
+    - signbit, copysign, frexp, ldexp
+    - absolute, positive, negative
+    - sign
+    - fmod, mod, remainder
+    - divmod
+    - angle
+    - modf
+    - heaviside
+
+  * maybe series?
+    - sin, cos, tan, arcsin, arccos, arctan
+    - sinh, cosh, tanh, arcsinh, arccosh, arctanh
+    - hypot
+    - arctan2
+    - sqrt, cbrt
+    - exp, expm1, exp2
+    - log, log2, log10, log1p
+    - logaddexp, logaddexp2
+    - i0
+  * hard ufuncs:
+    - floor_divide
+    - fix, rint, ceil, trunc
+    - nextafter, spacing (?)
+    - lcm, gcd
+    - maximum, fmax, minimum, fmin
+  * easy routines
+    - sum, nansum, cumsum, nancumsum
+    - prod, nanprod, cumprod, nancumprod
+    - sinc (atleast if sin would work)
+    - real_if_close (with some relaxed rules)
+  * maybe routines
+    - convolve
+    - nan_to_num
+  * hard routines
+    - unwrap
+    - clip
+    - around, round_
+    - diff, ediff1d, gradient
+    - trapz
+    - interp
+    - cross (?)
+    - amax, amin, nanmax,nanmin
+      => bounds are possible though, maybe extra?
