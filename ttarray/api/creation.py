@@ -176,16 +176,7 @@ def array(ar, dtype=None, cluster=None, copy=True,*,ndim=0):
             ret.recluster(cluster)
         return ret
     else:
-        sh=np.shape(ar)
-        if cluster is None:
-            cluster=find_balanced_cluster(sh)
-        print(ar)
-        ar=np.reshape(ar,tuple([1]+list(sh)+[1]))
-        print(ar)
-        if dtype is not None:
-            ar=ar.astype(dtype=dtype,copy=False)#change dtype if necessary
-        tts=array_to_ttslice(ar,cluster,trivial_decomposition)
-        return TensorTrainArray.frommatrices(tts)
+        return TensorTrainArray.fromdense(ar,dtype,cluster)
 @implement_function("array","slice")
 def slice(ar, dtype=None, cluster=None, copy=True,*,ndim=0):
     if isinstance(ar,TensorTrainSlice):
@@ -195,12 +186,7 @@ def slice(ar, dtype=None, cluster=None, copy=True,*,ndim=0):
         #recluster then recast
         pass
     else:
-        if cluster is None:
-            cluster=find_balanced_cluster(np.shape(ar)[1:-1])
-        if dtype is not None:
-            ar=ar.astype(dtype=dtype,copy=False)#change dtype if necessary
-        tts=array_to_ttslice(ar,cluster,trivial_decomposition)
-        return TensorTrainSlice.frommatrices(tts)
+        return TensorTrainSlice.fromdense(ar,dtype,cluster)
 
 @implement_function("asarray","array")
 def asarray(ar, dtype=None,cluster=None):

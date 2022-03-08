@@ -1,8 +1,7 @@
 import numpy as np
 import copy
 from functools import reduce
-from .raw import ttslice_to_array,array_to_ttslice
-import numpy.linalg as la
+from .raw import ttslice_to_array,array_to_ttslice,trivial_decomposition,find_balanced_cluster
 from numpy.lib.mixins import NDArrayOperatorsMixin
 HANDLER_FUNCTION_ARRAY={}
 HANDLER_UFUNC_ARRAY={}
@@ -92,11 +91,16 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
     def frommatrices(cls,matrices):
         return cls(matrices)
     def __array__(self,dtype=None):
-        return np.asarray(self.toarray(),dtype)
+        return np.asarray(self.todense(),dtype)
     @classmethod
-    def fromarray(cls,ar,dims=None,canonicalize=True,qr=la.qr):
-        return cls.frommatrices(array_to_ttslice(ar,cluster,qr))
-    def toarray(self):
+    def fromdense(cls,ar,dtype=None,cluster=None):
+        if cluster is None:
+            cluster=find_balanced_cluster(np.shape(ar)[1:-1])
+        if dtype is not None:
+            ar=ar.astype(dtype=dtype,copy=False)#change dtype if necessary
+        tts=array_to_ttslice(ar,cluster,trivial_decomposition)
+        return cls.frommatrices(tts)
+    def todense(self):
         return ttslice_to_array(self._data)
     def asmatrices(self):
         '''
@@ -140,12 +144,15 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
         self.L=self._tts.L
         self.chi=self._tts.chi
     def __array__(self,dtype=None):
-        return np.asarray(self.toarray(),dtype)
+        return np.asarray(self.todense(),dtype)
+    # @classmethod
+    # def __array_wrap__(cls,arr,context=None):
+    #     return cls.fromdense(arr)
     @classmethod
-    def fromarray(cls,ar,cluster=None):
-        return cls(TensorTrainSlice.fromarray(ar,dims,canonicalize))
-    def toarray(self):
-        return self._tts.toarray()[0,...,0]
+    def fromdense(cls,ar,dtype=None,cluster=None):
+        return cls(TensorTrainSlice.fromdense(ar[None,...,None],dtype,cluster))
+    def todense(self):
+        return self._tts.todense()[0,...,0]
     @classmethod
     def frommatrices(cls,mpl):
         return cls(TensorTrainSlice(mpl))
