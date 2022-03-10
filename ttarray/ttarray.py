@@ -1,7 +1,7 @@
 import numpy as np
 import copy
 from functools import reduce
-from .raw import ttslice_to_array,array_to_ttslice,trivial_decomposition,find_balanced_cluster
+from .raw import ttslice_to_dense,dense_to_ttslice,trivial_decomposition,find_balanced_cluster
 from numpy.lib.mixins import NDArrayOperatorsMixin
 HANDLER_FUNCTION_ARRAY={}
 HANDLER_UFUNC_ARRAY={}
@@ -98,10 +98,10 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
             cluster=find_balanced_cluster(np.shape(ar)[1:-1])
         if dtype is not None:
             ar=ar.astype(dtype=dtype,copy=False)#change dtype if necessary
-        tts=array_to_ttslice(ar,cluster,trivial_decomposition)
+        tts=dense_to_ttslice(ar,cluster,trivial_decomposition)
         return cls.frommatrices(tts)
     def todense(self):
-        return ttslice_to_array(self._data)
+        return ttslice_to_dense(self._data)
     def asmatrices(self):
         '''
             This method is called 'as_matrix_list' since it returns a view
