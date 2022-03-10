@@ -2,14 +2,14 @@
   - empty,ones,zeros,full
   - empty_like,ones_like,zeros_like,full_like
   - array,asarray,asanyarray
+  - frombuffer,fromiter
 * Implemented:
-  - frombuffer,fromiter,fromstring
+  - fromfunction (for now, later maybe ttcross)
 * Todo:
   * diagonal
     - eye, identity, diag, diagflat
   * Decomposition from dense (for now at least)
     - arange,linspace,logspace,geomspace
-    - fromfunction (for now, later maybe ttcross)
     - tri
     - tril,triu
     - vander
@@ -18,6 +18,7 @@
     - meshgrid
     - asfarray
 * Not supported (return not implemented?)
+  numpy.fromstring (seems very deprecated nowadays)
   numpy.asmatrix
   numpy.mat
   numpy.bmat

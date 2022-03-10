@@ -205,11 +205,33 @@ def asanyslice(ar, dtype=None,cluster=None):
 
 @implement_function("frombuffer","array")
 def frombuffer(buffer, dtype=float, count=- 1, offset=0, cluster=None):
-    return array(np.frombuffer(buffer,dtype,count,offset),dtype=dtype,cluster=cluster,copy=False)
+    return array(np.frombuffer(buffer,dtype,count,offset),dtype=dtype,cluster=cluster)
 
 @implement_function("frombuffer","slice")
 def frombuffer_slice(buffer, dtype=float, count=- 1, offset=0, cluster=None):
-    return slice(np.frombuffer(buffer,dtype,count,offset),dtype=dtype,cluster=cluster,copy=False)
+    raise TypeError("TensorTrainSlice have at least rank 2, cannot construct a TensorTrainSlice from buffer")
+
+@implement_function("fromiter","array")
+def fromiter(iter, dtype, count=- 1, cluster=None):
+    return array(np.fromiter(iter,dtype,count),dtype=dtype,cluster=cluster)
+
+@implement_function("fromiter","slice")
+def fromiter_slice(iter, dtype, count=- 1, cluster=None):
+    raise TypeError("TensorTrainSlice have at least rank 2, cannot construct a TensorTrainSlice from iter")
+
+@implement_function("fromfunction","array")
+def fromfunction(function, shape, dtype=float, cluster=None, **kwargs):
+    '''
+        Should be upgraded to support ttcross eventually, so might change behavior if function is not sane
+    '''
+    return array(np.fromfunction(function,shape,dtype=dtype,**kwargs),dtype=dtype,cluster=cluster)
+
+@implement_function("fromfunction","slice")
+def fromfunction_slice(function, shape, dtype=float, cluster=None, **kwargs):
+    '''
+        Should be upgraded to support ttcross eventually, so might change behavior if function is not sane
+    '''
+    return slice(np.fromfunction(function,shape,dtype=dtype,**kwargs),dtype=dtype,cluster=cluster)
 
 @implement_function()
 def copy(a,*,order=None,subok=None):
