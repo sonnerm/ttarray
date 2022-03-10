@@ -1,8 +1,8 @@
 * Tested:
   - empty,ones,zeros,full
   - empty_like,ones_like,zeros_like,full_like
-* Implemented:
   - array,asarray,asanyarray
+* Implemented:
   - frombuffer,fromiter,fromstring
 * Todo:
   * diagonal

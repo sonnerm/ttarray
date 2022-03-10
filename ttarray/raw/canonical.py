@@ -16,17 +16,38 @@ def is_canonical(ttslice,center=-1,eps=1e-8):
                 return False
     return True
 
-def canonicalize(ttslice,center=-1):
+def canonicalize(ttslice,qr=la.qr,center=-1):
     '''
-        Bring ttslice to canonical form with center
+        Bring ttslice to canonical form with center, inplace
     '''
+    def rq(x):
+        q,r=qr(x.T)
+        return r.T,q.T
+    if center<0:
+        center=len(ttslice)+center
     cshape=car.shape
     car=ttslice[0].reshape((-1,car.shape[-1]))
+    for i in range(1,center):
+        nshape=ttslice[i].shape
+        car=np.tensordot(car,np.reshape(ttslice[i],(nshape[0],-1)),(-1,0))
+        q,r=qr(car)
+        ttslice[i-1]=np.reshape(q,cshape)
+        car=r
+        cshape=nshape
+    ttslice[center]=np.reshape(car,cshape)
+    for i in range(center+1,len(ttslice)-1):
+        nshape=ttslice[i].shape
+        car=np.tensordot(car,np.reshape(ttslice[i],(nshape[0],-1)),(-1,0))
+        q,r=rq(car)
+        ttslice[i-1]=np.reshape(r,cshape)
+        car=q
+        cshape=nshape
 
 
-def calculate_singular_values(ttslice,svd=la.svd):
+
+def singular_values(ttslice,center,svd=la.svd):
     '''
-        Assume ttslice is left-canonical and extract the singular values
+        Assume ttslice is canonical and extract the singular values
     '''
     pass
 def shift_orthogonality_center_with_singular_values(ttslice,svs,oldcenter,newcenter):

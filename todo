@@ -1,12 +1,13 @@
 * Priorities:
-  - array needs to work
   - canonicalize + raw functions
   - truncate
   - tensordot
+  - tenpy interop
   @@@@ Usable milestone
   - add, mul
 
   Think about ownership
+Large shape + clusters
 * Ignored parts of numpy api
   * String functions (numpy.char)
   * numpy.ctypeslib
