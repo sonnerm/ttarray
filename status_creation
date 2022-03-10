@@ -5,11 +5,11 @@
   - frombuffer,fromiter
 * Implemented:
   - fromfunction (for now, later maybe ttcross)
+  - arange,linspace,logspace,geomspace
 * Todo:
   * diagonal
     - eye, identity, diag, diagflat
   * Decomposition from dense (for now at least)
-    - arange,linspace,logspace,geomspace
     - tri
     - tril,triu
     - vander

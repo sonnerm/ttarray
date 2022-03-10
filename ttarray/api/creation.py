@@ -253,13 +253,28 @@ def arange(*args, **kwargs):
         array(np.arange(*args,**kwargs))
 
 @implement_function("arange","slice")
-def _arange_slice():
+def arange_slice(*args, **kwargs):
     raise TypeError("TensorTrainSlice have at least rank 2, cannot construct a TensorTrainSlice from arange")
 
 @implement_function("linspace","array")
 def linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis=0,cluster=None):
-    array(np.linspace(start,stop,num,endpoint,retstep,dtype,axis),cluster=None)
+    array(np.linspace(start,stop,num,endpoint,retstep,dtype,axis),cluster=cluster)
 
 @implement_function("linspace","slice")
-def linspace_slice(start,stop,step):
-    slice(np.linspace(start,stop,num,endpoint,retstep,dtype,axis),cluster=None)
+def linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis=0,cluster=None):
+    slice(np.linspace(start,stop,num,endpoint,retstep,dtype,axis),cluster=cluster)
+@implement_function("logspace","array")
+def logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0,cluster=None):
+    array(np.logspace(start,stop,num,endpoint,base,dtype,axis),cluster=cluster)
+
+@implement_function("logspace","slice")
+def logspace_slice(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0,cluster=None):
+    slice(np.logspace(start,stop,num,endpoint,base,dtype,axis),cluster=cluster)
+
+@implement_function("geomspace","array")
+def geomspace(start, stop, num=50, endpoint=True, dtype=None, axis=0,cluster=None):
+    array(np.geomspace(start,stop,num,endpoint,dtype,axis),cluster=cluster)
+
+@implement_function("geomspace","slice")
+def geomspace_slice(start, stop, num=50, endpoint=True, dtype=None, axis=0,cluster=None):
+    slice(np.geomspace(start,stop,num,endpoint,dtype,axis),cluster=cluster)
