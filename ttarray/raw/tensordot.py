@@ -1,8 +1,7 @@
 import numpy as np
-def contract(ttslice1,ttslice2,axis):
+def tensordot(ttslice1,ttslice2,axes):
     '''
         Contract two tensor train with the same clustering along the given axis
     '''
-    def _contract_tensor(t1,t2,axis):
-        pass
-    return [_contract_tensor(t1,t2,axis) for t1,t2 in zip(ttslice1,ttslice2)]
+    maxes=tuple(i+1 for i in axes[0]),tuple(i+1 for i in axes[1])
+    return [np.tensordot(t1,t2,maxes) for t1,t2 in zip(ttslice1,ttslice2)]

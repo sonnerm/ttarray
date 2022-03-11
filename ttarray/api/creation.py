@@ -207,17 +207,17 @@ def asanyslice(ar, dtype=None,cluster=None):
 def frombuffer(buffer, dtype=float, count=- 1, offset=0, cluster=None):
     return array(np.frombuffer(buffer,dtype,count,offset),dtype=dtype,cluster=cluster)
 
-@implement_function("frombuffer","slice")
-def frombuffer_slice(buffer, dtype=float, count=- 1, offset=0, cluster=None):
-    raise TypeError("TensorTrainSlice have at least rank 2, cannot construct a TensorTrainSlice from buffer")
+# @implement_function("frombuffer","slice")
+# def frombuffer_slice(buffer, dtype=float, count=- 1, offset=0, cluster=None):
+#     raise TypeError("TensorTrainSlice have at least rank 2, cannot construct a TensorTrainSlice from buffer")
 
 @implement_function("fromiter","array")
 def fromiter(iter, dtype, count=- 1, cluster=None):
     return array(np.fromiter(iter,dtype,count),dtype=dtype,cluster=cluster)
 
-@implement_function("fromiter","slice")
-def fromiter_slice(iter, dtype, count=- 1, cluster=None):
-    raise TypeError("TensorTrainSlice have at least rank 2, cannot construct a TensorTrainSlice from iter")
+# @implement_function("fromiter","slice")
+# def fromiter_slice(iter, dtype, count=- 1, cluster=None):
+#     raise TypeError("TensorTrainSlice have at least rank 2, cannot construct a TensorTrainSlice from iter")
 
 @implement_function("fromfunction","array")
 def fromfunction(function, shape, dtype=float, cluster=None, **kwargs):
@@ -226,12 +226,12 @@ def fromfunction(function, shape, dtype=float, cluster=None, **kwargs):
     '''
     return array(np.fromfunction(function,shape,dtype=dtype,**kwargs),dtype=dtype,cluster=cluster)
 
-@implement_function("fromfunction","slice")
-def fromfunction_slice(function, shape, dtype=float, cluster=None, **kwargs):
-    '''
-        Should be upgraded to support ttcross eventually, so might change behavior if function is not sane
-    '''
-    return slice(np.fromfunction(function,shape,dtype=dtype,**kwargs),dtype=dtype,cluster=cluster)
+# @implement_function("fromfunction","slice")
+# def fromfunction_slice(function, shape, dtype=float, cluster=None, **kwargs):
+#     '''
+#         Should be upgraded to support ttcross eventually, so might change behavior if function is not sane
+#     '''
+#     return slice(np.fromfunction(function,shape,dtype=dtype,**kwargs),dtype=dtype,cluster=cluster)
 
 @implement_function()
 def copy(a,*,order=None,subok=None):
@@ -252,29 +252,34 @@ def arange(*args, **kwargs):
     else:
         array(np.arange(*args,**kwargs))
 
-@implement_function("arange","slice")
-def arange_slice(*args, **kwargs):
-    raise TypeError("TensorTrainSlice have at least rank 2, cannot construct a TensorTrainSlice from arange")
+# @implement_function("arange","slice")
+# def arange_slice(*args, **kwargs):
+#     raise TypeError("TensorTrainSlice have at least rank 2, cannot construct a TensorTrainSlice from arange")
 
 @implement_function("linspace","array")
 def linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis=0,cluster=None):
-    array(np.linspace(start,stop,num,endpoint,retstep,dtype,axis),cluster=cluster)
+    array(np.linspace(todense(start),todense(stop),num,endpoint,retstep,dtype,axis),cluster=cluster)
 
 @implement_function("linspace","slice")
 def linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis=0,cluster=None):
-    slice(np.linspace(start,stop,num,endpoint,retstep,dtype,axis),cluster=cluster)
+    slice(np.linspace(todense(start),todense(stop),num,endpoint,retstep,dtype,axis),cluster=cluster)
 @implement_function("logspace","array")
 def logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0,cluster=None):
-    array(np.logspace(start,stop,num,endpoint,base,dtype,axis),cluster=cluster)
+    array(np.logspace(todense(start),todense(stop),num,endpoint,base,dtype,axis),cluster=cluster)
 
 @implement_function("logspace","slice")
 def logspace_slice(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0,cluster=None):
-    slice(np.logspace(start,stop,num,endpoint,base,dtype,axis),cluster=cluster)
+    slice(np.logspace(todense(start),todense(stop),num,endpoint,base,dtype,axis),cluster=cluster)
 
 @implement_function("geomspace","array")
 def geomspace(start, stop, num=50, endpoint=True, dtype=None, axis=0,cluster=None):
-    array(np.geomspace(start,stop,num,endpoint,dtype,axis),cluster=cluster)
+    array(np.geomspace(todense(start),todense(stop),num,endpoint,dtype,axis),cluster=cluster)
 
 @implement_function("geomspace","slice")
 def geomspace_slice(start, stop, num=50, endpoint=True, dtype=None, axis=0,cluster=None):
-    slice(np.geomspace(start,stop,num,endpoint,dtype,axis),cluster=cluster)
+    slice(np.geomspace(todense(start),todense(stop),num,endpoint,dtype,axis),cluster=cluster)
+
+def todense(ttar):
+    if isinstance(ttar,TensorTrainBase):
+        return ttar.todense()
+    return ttar

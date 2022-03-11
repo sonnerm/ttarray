@@ -132,11 +132,15 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         '''
         return list(self._data) #shallow copy to protect invariants
     def __array_function__(self,func,types,args,kwargs):
-        ret=HANDLER_FUNCTION_SLICE[func.__name__](*args,**kwargs)
-        return ret
+        f=HANDLER_FUNCTION_SLICE.get(func.__name__,None)
+        if f is None:
+            return NotImplemented
+        return f(*args,**kwargs)
     def __array_ufunc__(self,ufunc,method,args,kwargs):
-        ret=HANDLER_UFUNC_SLICE[(ufunc,method)](*args,**kwargs)
-        return ret
+        f=HANDLER_UFUNC_SLICE.get((ufunc,method),None)
+        if f is None:
+            return NotImplemented
+        return f(*args,**kwargs)
 
 class _TensorTrainArrayData(_TensorTrainSliceData):
     def __setitem__(self,ind,it):
@@ -195,8 +199,12 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
     def asmatrices(self):
         return self._tts.asmatrices() #already does shallow copying
     def __array_function__(self,func,types,args,kwargs):
-        ret=HANDLER_FUNCTION_ARRAY[func.__name__](*args,**kwargs)
-        return ret
+        f=HANDLER_FUNCTION_ARRAY.get(func.__name__,None)
+        if f is None:
+            return NotImplemented
+        return f(*args,**kwargs)
     def __array_ufunc__(self,ufunc,method,args,kwargs):
-        ret=HANDLER_UFUNC_SLICE[(ufunc,method)](*args,**kwargs)
-        return ret
+        f=HANDLER_UFUNC_ARRAY.get((ufunc,method),None)
+        if f is None:
+            return NotImplemented
+        return f(*args,**kwargs)

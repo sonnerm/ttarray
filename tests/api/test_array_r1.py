@@ -1,7 +1,6 @@
 from .. import random_array,check_ttarray_dense
 import numpy as np
 from ttarray import frombuffer,fromiter
-from ttarray import frombuffer_slice,fromiter_slice
 from ttarray import ones_slice
 import pytest
 SLICE_PROTOTYPE=ones_slice((2,2,3),int,((2,),),2)
@@ -40,11 +39,7 @@ def test_ttarray_fromiter_nocluster(seed_rng,shape_r1):
         check_ttarray_dense(ar2,npar,cluster,chi)
 def test_ttslice_frombuffer():
     with pytest.raises(TypeError):
-        frombuffer_slice(None)
-    with pytest.raises(TypeError):
         np.frombuffer(None,like=SLICE_PROTOTYPE)
 def test_ttslice_fromiter():
-    with pytest.raises(TypeError):
-        fromiter_slice([1,2,3,4],dtype=int)
     with pytest.raises(TypeError):
         np.fromiter([1,2,3,4],dtype=int,like=SLICE_PROTOTYPE)
