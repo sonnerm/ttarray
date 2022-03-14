@@ -6,8 +6,8 @@ def multiply_ttslice(ttslice1,ttslice2):
     if len(ttslice1)==1:
         return ttslice1[0]*ttslice2[0] # easy
     cshape=ttslice1[0].shape
-    t1=ttslice1[0].reshape((-1,t1.shape[-1]))
-    t2=ttslice2[0].reshape((-1,t2.shape[-1]))
+    t1=ttslice1[0].reshape((-1,ttslice1[0].shape[-1]))
+    t2=ttslice2[0].reshape((-1,ttslice2[0].shape[-1]))
     ttslicen=[np.einsum("ab,ac->abc",t1,t2).reshape(cshape[:-1]+(t1.shape[-1]*t2.shape[-1],))]
     for t1,t2 in ttslice1[1:-1],ttslice2[1:-1]:
         cshape=t1.shape

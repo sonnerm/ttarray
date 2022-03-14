@@ -1,5 +1,6 @@
 from ttarray.raw import dense_to_ttslice,ttslice_to_dense
 from ttarray.raw import is_canonical,find_balanced_cluster,trivial_decomposition
+from ttarray.raw import is_left_canonical,is_right_canonical
 import numpy.linalg as la
 import numpy as np
 import pytest
@@ -19,7 +20,8 @@ def test_array_conversion_qr(seed_rng,shape_cluster):
     shape=tuple([2]+list(shape)+[3])
     ar=np.random.random(size=shape)
     ttar=dense_to_ttslice(ar,cluster,la.qr)
-    assert is_canonical(ttar)
+    assert is_canonical(ttar,-1)
+    assert is_left_canonical(ttar)
     assert ttslice_to_dense(ttar)==pytest.approx(ar)
     assert len(ttar)==len(cluster)
     assert [ta.shape[1:-1]==c for ta,c in zip(ttar,cluster)]
@@ -33,7 +35,8 @@ def test_array_conversion_rq(seed_rng,shape_cluster):
         q,r=la.qr(x.T)
         return r.T,q.T
     ttar=dense_to_ttslice(ar,cluster,rq)
-    assert is_canonical(ttar,center=0)
+    assert is_canonical(ttar,0)
+    assert is_right_canonical(ttar)
     assert ttslice_to_dense(ttar)==pytest.approx(ar)
     assert len(ttar)==len(cluster)
     assert [ta.shape[1:-1]==c for ta,c in zip(ttar,cluster)]

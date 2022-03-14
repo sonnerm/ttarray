@@ -1,0 +1,16 @@
+*Tested
+  * find_balanced_cluster
+  * ttslice_to_dense, dense_to_ttslice
+*Implemented
+  * is_canonical, is_right_canonical, is_left_canonical
+  * canonicalize, right_canonicalize, left_canonicalize
+  * multiply_ttslice
+  * recluster
+* Todo
+  * find_recluster
+  * add_ttslice, add_scalar
+  * tensordot
+  * lreshape (?)
+  * permute
+  * singular_values, left_singular_values, right_singular_values
+  * truncate, truncate_with_singular_values

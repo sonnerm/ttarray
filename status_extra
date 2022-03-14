@@ -1,12 +1,15 @@
 * Implemented
   - cluster
   - chi
+  - todense
 * Todo
   - canonicalize
   - iscanonical
-  - svd_all
+  - singular_values
   - recluster
+  - permute
+  - lreshape
   - truncate
-  - random mps
   - multiouter, multikron
   - partial svd, eig(h), eigval(h) using dmrg
+  - random mps

@@ -22,6 +22,8 @@ SHAPE_R2+=[((8,16),((2,2),(2,2),(2,2),(1,2)))]
 SHAPE_R3=[((1,1,1),((1,1,1),))]
 SHAPE_CLUSTER=SHAPE_CLUSTER_R0+SHAPE_CLUSTER_R1+SHAPE_CLUSTER_R2+SHAPE_CLUSTER_R3
 SHAPE=SHAPE_R0+SHAPE_R1+SHAPE_R2+SHAPE_R3
+# LARGE_SHAPE=[(2**100),(2,)*100,(2**50,3**50),(2,3)*50]
+# LARGE_SHAPE_CLUSTER=
 @pytest.fixture(params=SHAPE_CLUSTER_R1)
 def shape_cluster_r1(request):
     return request.param
