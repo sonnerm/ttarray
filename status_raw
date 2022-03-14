@@ -3,8 +3,8 @@
   * ttslice_to_dense, dense_to_ttslice
   * is_canonical, is_right_canonical, is_left_canonical
   * canonicalize, right_canonicalize, left_canonicalize
-*Implemented
   * multiply_ttslice
+*Implemented
   * recluster
 * Todo
   * find_recluster

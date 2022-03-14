@@ -2,7 +2,6 @@ import pytest
 from .. import random_array
 from ttarray.raw import trivial_decomposition,dense_to_ttslice,ttslice_to_dense
 from ttarray.raw import add_ttslice
-@pytest.mark.xfail
 def test_add_short(seed_rng,shape_cluster):
     shape,cluster=shape_cluster
     shape=(2,)+shape+(3,)
