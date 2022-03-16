@@ -113,7 +113,5 @@ def test_singular_values(seed_rng,shape):
         svc=dense_singular_values(ar,cluster)
         right_canonicalize(ttar)
         sv=right_singular_values(ttar)
-        print(sv)
-        print(svc)
         for ss,sc in zip(sv,svc):
             assert ss==pytest.approx(sc)
