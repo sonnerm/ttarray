@@ -128,9 +128,14 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         return ttslice_to_dense(self._data)
     def asmatrices(self):
         '''
-            This method is called 'as_matrix_list' since it returns a view
+            This method is called 'asmatrices' since it returns a view
         '''
         return list(self._data) #shallow copy to protect invariants
+    def asmatrices_unchecked(self):
+        '''
+            Doesn't copy, if invariants are violated that is your problem
+        '''
+        return self._data
     def __array_function__(self,func,types,args,kwargs):
         f=HANDLER_FUNCTION_SLICE.get(func.__name__,None)
         if f is None:
@@ -198,6 +203,8 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
         return copy.copy(self._tts) #shallow copy necessary to protect invariants, stilll a view
     def asmatrices(self):
         return self._tts.asmatrices() #already does shallow copying
+    def asmatrices_unchecked(self):
+        return self._tts.asmatrices_unchecked()
     def __array_function__(self,func,types,args,kwargs):
         f=HANDLER_FUNCTION_ARRAY.get(func.__name__,None)
         if f is None:

@@ -6,7 +6,9 @@
   @@@@ Usable milestone
   - add, mul
 
-  Think about ownership
+  Think about ownership of data
+* upload to github
+* document everything
 Large shape + clusters
 * Ignored parts of numpy api
   * String functions (numpy.char)

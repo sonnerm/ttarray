@@ -23,6 +23,9 @@ def check_ttslice_dense(tt,ar,cluster,chi):
     arb=np.array(tt)
     assert type(arb)==np.ndarray
     assert arb == pytest.approx(ar)
+def check_raw_ttslice_dense(tt,ar,cluster,chi):
+    __traceback_hide__ = True
+    check_ttslice_dense(TensorTrainSlice.frommatrices(tt),ar,cluster,chi)
 def random_array(shape,dtype):
     if np.dtype(dtype).kind=="i":
         return np.random.randint(-10000000,10000000,size=shape,dtype=dtype)

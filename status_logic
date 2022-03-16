@@ -1,6 +1,4 @@
 * Todo
-  * easy
-    - isscalar
   * possible efficiently (i think)
     - isfinite, isinf, isnan, isnat
     - all, any (because only zero evaluates to false)
@@ -19,3 +17,4 @@
     -array_equal, array_equiv
   * impossible since deprecated and not __array_function__
     - isfortran
+    - isscalar

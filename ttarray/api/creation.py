@@ -148,16 +148,19 @@ def full_like(prototype, fill_value, dtype=None, shape=None, cluster=None, chi=1
     else:
         return NotImplemented
 
-@implement_function()
-def eye(N, M=None, k=0, dtype=np.float64, cluster=None,chi=1):
-    if k!=0:
-        raise NotImplementedError("Diagonal TensorTrains with k!=0 are not yet supported")
-    shape=(N,M)
-    cluster,chi=_get_cluster_chi_array(shape,cluster,chi)
-    ms=[np.eye(N,M)]
-@implement_function()
-def identity(n,dtype=None,cluster=None,chi=1):
-    return eye(N=n,dtype=dtype,cluster=cluster,chi=chi)
+@implement_function("eye","array")
+def eye(N, M=None, k=0, dtype=np.float64, cluster=None):
+    if M!=None:
+        raise NotImplementedError("not implemented yet ...")
+    return diag(ones((N,),dtype=dtype,cluster=cluster),k)
+@implement_function("identity","array")
+def identity(n,dtype=None,cluster=None):
+    return eye(N=n,dtype=dtype,cluster=cluster)
+@implement_function("diag","array")
+def diag(v,k=0):
+    pass
+
+
 
 @implement_function("array","array")
 def array(ar, dtype=None, cluster=None, copy=True,*,ndim=0):
