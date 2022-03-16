@@ -43,26 +43,37 @@ def test_canonicalize_svs_short(seed_rng,shape):
         center=len(ttar)//2
         ttar1=ttar.copy()
         right_canonicalize(ttar1)
-        svs1=singular_values(ttar1,0)
+        assert is_right_canonical(ttar1)
+        check_raw_ttslice_dense(ttar1,ar,cluster,chi)
+        svs1=right_singular_values(ttar1,inplace=True)
         for ss,sc in zip(svs1,svc):
             assert ss==pytest.approx(sc)
-        assert is_right_canonical(ttar1)
+        assert is_left_canonical(ttar1)
         check_raw_ttslice_dense(ttar1,ar,cluster,chi)
-        shift_orthogonality_center_with_singular_values(ttar1,0,0,svs1)
-        check_raw_ttslice_dense(ttar1,ar,cluster,chi)
-        assert is_right_canonical(ttar1)
-        shift_orthogonality_center_with_singular_values(ttar1,0,-1,svs1)
+        shift_orthogonality_center_with_singular_values(ttar1,-1,-1,svs1)
         check_raw_ttslice_dense(ttar1,ar,cluster,chi)
         assert is_left_canonical(ttar1)
-        svs2=singular_values(ttar1,-1)
+        shift_orthogonality_center_with_singular_values(ttar1,-1,0,svs1)
+        check_raw_ttslice_dense(ttar1,ar,cluster,chi)
+        assert is_right_canonical(ttar1)
+        svs2=singular_values(ttar1,0)
         for ss,sc in zip(svs2,svc):
             assert ss==pytest.approx(sc)
-        shift_orthogonality_center_with_singular_values(ttar1,-1,center,svs2)
+        shift_orthogonality_center_with_singular_values(ttar1,0,center,svs2)
         check_raw_ttslice_dense(ttar1,ar,cluster,chi)
         assert is_canonical(ttar1,center)
         svs3=singular_values(ttar1,center)
         for ss,sc in zip(svs3,svc):
             assert ss==pytest.approx(sc)
+        left_canonicalize(ttar1)
+        assert is_left_canonical(ttar1)
+        check_raw_ttslice_dense(ttar1,ar,cluster,chi)
+        svs4=left_singular_values(ttar1,inplace=True)
+        for ss,sc in zip(svs4,svc):
+            assert ss==pytest.approx(sc)
+        assert is_right_canonical(ttar1)
+        check_raw_ttslice_dense(ttar1,ar,cluster,chi)
+
 def test_canonical_shift_short(seed_rng,shape):
     shape,cluster=shape
     chi=_calc_chi(cluster,2,3)

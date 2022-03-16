@@ -10,11 +10,11 @@
 *Implemented
   * shift_orthogonality_center_with_singular_values
   * recluster
-* Todo
-  * add_scalar
-  * find_recluster
   * tensordot
+* Todo
+  * find_recluster
   * lreshape (?)
   * permute
-  * truncate, truncate_with_singular_values
+  * svd_truncate, svd_truncate_with_singular_values
   * find_orthogonality_center
+  * diag_ttslice
