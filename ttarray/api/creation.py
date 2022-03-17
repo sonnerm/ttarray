@@ -252,26 +252,41 @@ def arange(*args, **kwargs):
 def linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis=0,cluster=None):
     array(np.linspace(todense(start),todense(stop),num,endpoint,retstep,dtype,axis),cluster=cluster)
 
-@implement_function("linspace","slice")
-def linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis=0,cluster=None):
-    slice(np.linspace(todense(start),todense(stop),num,endpoint,retstep,dtype,axis),cluster=cluster)
+# @implement_function("linspace","slice")
+# def linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis=0,cluster=None):
+#     slice(np.linspace(todense(start),todense(stop),num,endpoint,retstep,dtype,axis),cluster=cluster)
+
 @implement_function("logspace","array")
 def logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0,cluster=None):
-    array(np.logspace(todense(start),todense(stop),num,endpoint,base,dtype,axis),cluster=cluster)
+    return NotImplemented
 
-@implement_function("logspace","slice")
-def logspace_slice(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0,cluster=None):
-    slice(np.logspace(todense(start),todense(stop),num,endpoint,base,dtype,axis),cluster=cluster)
+# @implement_function("logspace","slice")
+# def logspace_slice(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0,cluster=None):
+#     slice(np.logspace(todense(start),todense(stop),num,endpoint,base,dtype,axis),cluster=cluster)
 
 @implement_function("geomspace","array")
 def geomspace(start, stop, num=50, endpoint=True, dtype=None, axis=0,cluster=None):
-    array(np.geomspace(todense(start),todense(stop),num,endpoint,dtype,axis),cluster=cluster)
+    return NotImplemented
 
-@implement_function("geomspace","slice")
-def geomspace_slice(start, stop, num=50, endpoint=True, dtype=None, axis=0,cluster=None):
-    slice(np.geomspace(todense(start),todense(stop),num,endpoint,dtype,axis),cluster=cluster)
+# @implement_function("geomspace","slice")
+# def geomspace_slice(start, stop, num=50, endpoint=True, dtype=None, axis=0,cluster=None):
+#     slice(np.geomspace(todense(start),todense(stop),num,endpoint,dtype,axis),cluster=cluster)
 
 def todense(ttar):
     if isinstance(ttar,TensorTrainBase):
         return ttar.todense()
     return ttar
+
+@implement_function("asfarray","array")
+def asfarray(ttar,dtype=None):
+    if not np.issubdtype(dtype,np.inexact):
+        dtype=float
+    return asarray(ttar,dtype=dtype)
+
+
+
+@implement_function("asfarray","slice")
+def asfslice(ttar,dtype=None):
+    if not np.issubdtype(dtype,np.inexact):
+        dtype=float
+    return asslice(ttar,dtype=dtype)

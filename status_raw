@@ -6,6 +6,7 @@
   * shift_orthogonality_center
   * singular_values, left_singular_values, right_singular_values
   * shift_orthogonality_center_with_singular_values
+  * find_orthogonality_center
   * multiply_ttslice
   * add_ttslice
 *Implemented
@@ -17,5 +18,5 @@
   * lreshape (?)
   * permute
   * truncate_svd_with_singular_values
-  * find_orthogonality_center
-  * diag_ttslice
+  * construct_diag_ttslice
+  * extract_diag_ttslice

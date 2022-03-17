@@ -13,6 +13,3 @@ def add_ttslice(ttslice1,ttslice2):
         ttslicen.append(np.concatenate([tt1,tt2],axis=-1))
     ttslicen.append(np.concatenate([ttslice1[-1],ttslice2[-1]],axis=0))
     return ttslicen
-def add_scalar(ttslice,scalar):
-    if len(ttslice)==1:
-        return [ttslice1[0]+scalar]

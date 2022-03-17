@@ -7,6 +7,7 @@
   - fromfunction (for now, later maybe ttcross)
   - arange,linspace,logspace,geomspace
   - copy
+  - asfarray (doesn't work yet since array is not complete)
 * Todo:
   * diagonal
     - eye, identity, diag, diagflat
@@ -16,7 +17,6 @@
     - vander
   * easy
     - meshgrid
-    - asfarray
 * Not supported (return not implemented?)
   numpy.fromstring (seems very deprecated nowadays)
   numpy.asmatrix

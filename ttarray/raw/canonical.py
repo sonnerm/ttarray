@@ -72,3 +72,18 @@ def right_canonicalize(ttslice,qr=la.qr):
         car=np.reshape(car,(nshape[0],-1))
         cshape=nshape
     ttslice[0]=np.reshape(car,cshape)
+def find_orthogonality_center(ttslice,eps=1e-8):
+    '''
+        If ttslice is in mixed canonical form, return the orthogonality center, otherwise return None
+    '''
+    for i,m in enumerate(ttslice):
+        mm=m.reshape((-1,m.shape[-1]))
+        if not np.allclose(mm.T.conj()@mm,np.eye(mm.shape[1],like=mm),atol=eps):
+            break
+    if i==len(ttslice)-1:
+        return len(ttslice)-1
+    for m in ttslice[i+1:]:
+        mm=m.reshape((m.shape[0],-1))
+        if not np.allclose(mm@mm.T.conj(),np.eye(mm.shape[0],like=mm),atol=eps):
+            return None
+    return i

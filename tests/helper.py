@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 from ttarray import TensorTrainArray,TensorTrainSlice
+import functools
 def check_ttarray_dense(tt,ar,cluster,chi):
     __traceback_hide__ = True
     assert isinstance(tt,TensorTrainArray)
@@ -35,3 +36,13 @@ def random_array(shape,dtype):
         return np.array(np.random.randn(*shape)+1.0j*np.random.randn(*shape),dtype=dtype)
     else:
         raise NotImplementedError("unknown dtype")
+
+def _product(seq):
+    return functools.reduce(lambda x,y:x*y, seq,1)
+def calc_chi(cluster,lefti=1,righti=1):
+    left,right=[lefti],[righti]
+    for c in cluster:
+        left.append(left[-1]*_product(c))
+    for c in cluster[::-1]:
+        right.append(right[-1]*_product(c))
+    return tuple(min(l,r) for l,r in zip(left[1:-1],right[1:-1][::-1]))
