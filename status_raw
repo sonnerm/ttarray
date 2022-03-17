@@ -5,16 +5,17 @@
   * canonicalize, right_canonicalize, left_canonicalize
   * shift_orthogonality_center
   * singular_values, left_singular_values, right_singular_values
+  * shift_orthogonality_center_with_singular_values
   * multiply_ttslice
   * add_ttslice
 *Implemented
-  * shift_orthogonality_center_with_singular_values
   * recluster
   * tensordot
+  * left_truncate_svd, right_truncate_svd, svd_truncate
 * Todo
   * find_recluster
   * lreshape (?)
   * permute
-  * svd_truncate, svd_truncate_with_singular_values
+  * truncate_svd_with_singular_values
   * find_orthogonality_center
   * diag_ttslice

@@ -84,3 +84,20 @@ def shift_orthogonality_center_with_singular_values(ttslice,oldcenter,newcenter,
             ttslice[o+1]=svs[o+1][tuple(sh)]*ttslice[o+1]
     else:
         pass #already correct
+def svd_truncate(ar,chi_max=None,cutoff=0.0,compute_uv=True,full_matrices=None,svd=la.svd):
+    if chi_max is None:
+        chi_max=min(ar.shape)
+    if compute_uv:
+        u,s,vh=svd(ar,full_matrices=False)
+        ind=min(chi_max,np.argmax(s<cutoff)-1)
+        return u[:,:ind],s[:ind],vh[:ind,:]
+    else:
+        s=svd(ar,compute_uv=False)
+        ind=min(chi_max,np.argmax(s<cutoff)-1)
+        return s[:ind]
+
+def left_truncate_svd(ttslice,chi_max=None,cutoff=None,svd=la.svd):
+    return left_singular_values(ttslice,svd=lambda x:svd_truncate(x,chi_max,cutoff,svd))
+
+def right_truncate_svd(ttslice,svd=la.svd):
+    return right_singular_values(ttslice,svd=lambda x:svd_truncate(x,chi_max,cutoff,svd))

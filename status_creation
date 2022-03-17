@@ -6,6 +6,7 @@
 * Implemented:
   - fromfunction (for now, later maybe ttcross)
   - arange,linspace,logspace,geomspace
+  - copy
 * Todo:
   * diagonal
     - eye, identity, diag, diagflat
@@ -14,7 +15,6 @@
     - tril,triu
     - vander
   * easy
-    - copy
     - meshgrid
     - asfarray
 * Not supported (return not implemented?)

@@ -45,16 +45,16 @@ def shift_orthogonality_center(ttslice,oldcenter,newcenter,qr=la.qr):
         ttslice[oldcenter:newcenter+1]=sslice
 def left_canonicalize(ttslice,qr=la.qr):
     '''
-        Bring ttslice to left canonical form with center, inplace
+        Bring ttslice to left canonical form, inplace
     '''
     car=ttslice[0].reshape((-1,ttslice[0].shape[-1]))
     cshape=ttslice[0].shape
     for i in range(1,len(ttslice)):
         nshape=ttslice[i].shape
-        car=car@np.reshape(ttslice[i],(nshape[0],-1))
         q,r=qr(car)
         ttslice[i-1]=np.reshape(q,cshape)
-        car=np.reshape(r,(-1,nshape[-1]))
+        car=r@np.reshape(ttslice[i],(nshape[0],-1))
+        car=np.reshape(car,(-1,nshape[-1]))
         cshape=nshape
     ttslice[-1]=np.reshape(car,cshape)
 
@@ -66,9 +66,9 @@ def right_canonicalize(ttslice,qr=la.qr):
     cshape=ttslice[-1].shape
     for i in range(len(ttslice)-2,-1,-1):
         nshape=ttslice[i].shape
-        car=np.reshape(ttslice[i],(-1,nshape[-1]))@car
         r,q=rq(car)
         ttslice[i+1]=np.reshape(q,cshape)
-        car=np.reshape(r,(nshape[0],-1))
+        car=np.reshape(ttslice[i],(-1,nshape[-1]))@r
+        car=np.reshape(car,(nshape[0],-1))
         cshape=nshape
     ttslice[0]=np.reshape(car,cshape)

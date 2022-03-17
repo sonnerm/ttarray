@@ -1,10 +1,7 @@
 * Priorities:
-  - canonicalize + raw functions
   - truncate
   - tensordot
   - tenpy interop
-  @@@@ Usable milestone
-  - add, mul
 
   Think about ownership of data
 * upload to github
