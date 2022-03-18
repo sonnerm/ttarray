@@ -5,6 +5,7 @@ from .canonical import is_canonical,is_left_canonical,is_right_canonical
 from .canonical import shift_orthogonality_center,find_orthogonality_center
 from .svd import shift_orthogonality_center_with_singular_values
 from .svd import singular_values,left_singular_values,right_singular_values
+from .svd import svd_truncate, left_truncate_svd, right_truncate_svd
 from .recluster import recluster
 from .tensordot import tensordot
 from .multiply import multiply_ttslice

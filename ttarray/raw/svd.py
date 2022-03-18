@@ -6,8 +6,8 @@ def singular_values(ttslice,center,svd=la.svd):
     '''
     if center<0:
         center=len(ttslice)+center
-    return left_singular_values(ttslice[:center+1])[:-2]+right_singular_values(ttslice[center:])
-def left_singular_values(ttslice,svd=la.svd,inplace=False):
+    return left_singular_values(ttslice[:center+1],svd,False)[:-2]+right_singular_values(ttslice[center:],svd,False)
+def left_singular_values(ttslice,svd=la.svd,inplace=True):
     '''
         Assume that ttslice is in left-canonical form, extract singular values
     '''
@@ -31,7 +31,7 @@ def left_singular_values(ttslice,svd=la.svd,inplace=False):
     return svs[::-1]
 
 
-def right_singular_values(ttslice,svd=la.svd,inplace=False):
+def right_singular_values(ttslice,svd=la.svd,inplace=True):
     '''
         Assume that ttslice is in right-canonical form, extract singular values
     '''
@@ -89,15 +89,26 @@ def svd_truncate(ar,chi_max=None,cutoff=0.0,compute_uv=True,full_matrices=None,s
         chi_max=min(ar.shape)
     if compute_uv:
         u,s,vh=svd(ar,full_matrices=False)
-        ind=min(chi_max,np.argmax(s<cutoff)-1)
+        if (s>cutoff).all():
+            ind=chi_max
+        else:
+            ind=min(chi_max,np.argmin(s>cutoff))
         return u[:,:ind],s[:ind],vh[:ind,:]
     else:
         s=svd(ar,compute_uv=False)
-        ind=min(chi_max,np.argmax(s<cutoff)-1)
+        if (s>cutoff).all():
+            ind=chi_max
+        else:
+            ind=min(chi_max,np.argmin(s>cutoff))
         return s[:ind]
+    # return svd(ar,full_matrices=False,compute_uv=compute_uv)
 
 def left_truncate_svd(ttslice,chi_max=None,cutoff=None,svd=la.svd):
-    return left_singular_values(ttslice,svd=lambda x:svd_truncate(x,chi_max,cutoff,svd))
+    def _svd(x,compute_uv=True,full_matrices=False):
+        return svd_truncate(x,chi_max,cutoff,compute_uv,full_matrices,svd)
+    return left_singular_values(ttslice,_svd)
 
-def right_truncate_svd(ttslice,svd=la.svd):
-    return right_singular_values(ttslice,svd=lambda x:svd_truncate(x,chi_max,cutoff,svd))
+def right_truncate_svd(ttslice,chi_max=None,cutoff=None,svd=la.svd):
+    def _svd(x,compute_uv=True,full_matrices=False):
+        return svd_truncate(x,chi_max,cutoff,compute_uv,full_matrices,svd)
+    return right_singular_values(ttslice,_svd)
