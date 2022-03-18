@@ -4,7 +4,6 @@
   - tenpy interop
 
   Think about ownership of data
-* upload to github
 * document everything
 Large shape + clusters
 * Ignored parts of numpy api

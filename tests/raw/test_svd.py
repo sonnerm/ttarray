@@ -95,8 +95,7 @@ def test_truncate(seed_rng,shape):
         assert is_left_canonical(ttar)
         sv2=left_singular_values(ttar)
         for ss,sc in zip(sv,sv2):
-            print(ss.shape,sc.shape)
-            assert ss==pytest.approx(sc[:20],rel=1e-1)
+            assert ss==pytest.approx(sc[:20],rel=2e-1,abs=1e-1)
             assert sc[20:]==pytest.approx(0.0)
         svc2=dense_singular_values(ttslice_to_dense(ttar),cluster)
         for ss,sc in zip(sv2,svc2):
