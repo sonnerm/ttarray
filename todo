@@ -1,7 +1,8 @@
 * Priorities:
-  - test recluster, tensordot
+  - test tensordot
   Think about ownership of data
 * document everything
+recluster should give optimal chi
 Large shape + clusters for tests
 * Ignored parts of numpy api
   * String functions (numpy.char)
