@@ -19,13 +19,13 @@ def left_singular_values(ttslice,svd=la.svd,inplace=True):
     svs=[]
     car=car.reshape((cshape[0],-1))
     for i in range(len(ttslice)-2,-1,-1):
-        car=ttslice[i].reshape((-1,ttslice[i].shape[-1]))@car
         u,s,vh=svd(car,full_matrices=False)
+        car=ttslice[i].reshape((-1,ttslice[i].shape[-1]))@(s[None,:]*u)
+        car=car.reshape((ttslice[i].shape[0],-1))
         if inplace:
             ttslice[i+1]=vh.reshape((vh.shape[0],)+cshape[1:])
             cshape=ttslice[i].shape[:-1]+(vh.shape[0],)
         svs.append(s)
-        car=(s[None,:]*u).reshape((ttslice[i].shape[0],-1))
     if inplace:
         ttslice[0]=car.reshape(cshape)
     # svs.append(svd(car.reshape((ttslice[0].shape[0],-1)),compute_uv=False))
@@ -44,13 +44,13 @@ def right_singular_values(ttslice,svd=la.svd,inplace=True):
     svs=[]
     car=car.reshape((-1,cshape[-1]))
     for i in range(1,len(ttslice)):
-        car=car@ttslice[i].reshape((ttslice[i].shape[0],-1))
         u,s,vh=svd(car,full_matrices=False)
+        car=(s[:,None]*vh)@ttslice[i].reshape((ttslice[i].shape[0],-1))
+        car=car.reshape((-1,ttslice[i].shape[-1]))
         if inplace:
             ttslice[i-1]=u.reshape(cshape[:-1]+(u.shape[-1],))
             cshape=(u.shape[-1],)+ttslice[i].shape[1:]
         svs.append(s)
-        car=(s[:,None]*vh).reshape((-1,ttslice[i].shape[-1]))
     if inplace:
         ttslice[-1]=car.reshape(cshape)
     # svs.append(svd(car.reshape((-1,ttslice[-1].shape[-1])),compute_uv=False))

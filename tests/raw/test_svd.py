@@ -99,7 +99,7 @@ def test_truncate(seed_rng,shape):
             assert sc[20:]==pytest.approx(0.0)
         svc2=dense_singular_values(ttslice_to_dense(ttar),cluster)
         for ss,sc in zip(sv2,svc2):
-            assert ss==pytest.approx(sc)
+            assert ss==pytest.approx(sc[:20])
 
         left_canonicalize(ttar2)
         sv=left_truncate_svd(ttar2,chi_max=None,cutoff=0.2)
@@ -111,4 +111,4 @@ def test_truncate(seed_rng,shape):
             assert ss==pytest.approx(sc[sc>0.2],rel=1e-1)
         svc2=dense_singular_values(ttslice_to_dense(ttar2),cluster)
         for ss,sc in zip(sv2,svc2):
-            assert ss==pytest.approx(sc)
+            assert ss==pytest.approx(sc[sc>0.2])
