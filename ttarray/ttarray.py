@@ -184,6 +184,8 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
     def L(self):
         return self._tts.L
 
+    def __repr__(self):
+        return "TensorTrainArray<dtype=%s, shape=%s, L=%s, cluster=%s, chi=%s>"%(self.dtype,self.shape,self.L,self.cluster,self.chi)
     def __array__(self,dtype=None):
         return np.asarray(self.todense(),dtype)
     # @classmethod
