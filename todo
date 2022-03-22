@@ -1,11 +1,8 @@
 * Priorities:
-  - truncate
-  - tensordot
-  - tenpy interop
-
+  - test recluster, tensordot
   Think about ownership of data
 * document everything
-Large shape + clusters
+Large shape + clusters for tests
 * Ignored parts of numpy api
   * String functions (numpy.char)
   * numpy.ctypeslib

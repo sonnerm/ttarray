@@ -10,12 +10,12 @@ numerical study of quantum systems.
 
 The package is build around the TensorTrainArray class which provides a numpy
 compatible api and are designed to be used just as numpy arrays. Leveraging
-__array_function__ and __array_ufunc__ this even works for routines in the
-normal numpy namespace or in some third party libraries.
-However, it is important to note that not all operations can be performed
-efficiently on tensor trains!
-Additional methods specific to the TensorTrain format are provided as well.
+`__array_function__` and `__array_ufunc__` this even works for routines in the
+normal numpy namespace or in some third party libraries. However, it is
+important to note that not all operations can be performed efficiently on tensor
+trains! Additional methods specific to the TensorTrain format are provided as
+well.
 
 Under the hood, the data is stored as a normal python list of numpy (or
-numpy-compatible) ndarrays which can be retrieved and manipulated manually.
-The raw namespace provides
+numpy-compatible) ndarrays which can be retrieved and manipulated manually. The
+raw namespace provides

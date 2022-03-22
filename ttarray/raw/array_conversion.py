@@ -37,7 +37,7 @@ def find_balanced_cluster(shape):
 def _product(seq):
     return functools.reduce(lambda x,y:x*y,seq,1) # python unbounded ints ftw!
 
-def dense_to_ttslice(a,cluster,decomposition):
+def dense_to_ttslice(a,cluster,decomposition=trivial_decomposition):
     '''
         Converts an array to a ttslice with a given cluster using a given decomposition
     '''

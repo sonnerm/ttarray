@@ -6,7 +6,8 @@ def check_ttarray_dense(tt,ar,cluster,chi):
     __traceback_hide__ = True
     assert isinstance(tt,TensorTrainArray)
     assert tt.cluster == cluster
-    assert tt.chi == chi
+    if chi is not None:
+        assert tt.chi == chi
     assert tt.shape == ar.shape
     assert tt.dtype == ar.dtype
     arb=np.array(tt)
@@ -18,7 +19,8 @@ def check_ttslice_dense(tt,ar,cluster,chi):
     __traceback_hide__ = True
     assert isinstance(tt,TensorTrainSlice)
     assert tt.cluster == cluster
-    assert tt.chi == chi
+    if chi is not None:
+        assert tt.chi == chi
     assert tt.shape == ar.shape
     assert tt.dtype == ar.dtype
     arb=np.array(tt)

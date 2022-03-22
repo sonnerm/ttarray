@@ -99,7 +99,8 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
     @property
     def dtype(self):
         return np.result_type(*self._data) #maybe enforce all matrices to the same dtype eventually
-
+    def __repr__(self):
+        return "TensorTrainSlice<dtype=%s, shape=%s, L=%s, cluster=%s, chi=%s>"%(self.dtype,self.shape,self.L,self.cluster,self.chi)
     def _check_consistency(self):
         if self.L<1:
             raise ValueError("There must be at least one matrix in the TensorTrainSlice")

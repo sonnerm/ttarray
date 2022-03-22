@@ -1,5 +1,6 @@
-from .array_conversion import dense_to_ttslice,ttslice_to_dense
-def recluster(ttslice,cluster_new,decomposition):
+from .array_conversion import dense_to_ttslice,ttslice_to_dense, trivial_decomposition
+import numpy as np
+def recluster(ttslice,cluster_new,decomposition=trivial_decomposition):
     '''
         Straightforward reclustering algorithm: join sites until both clusterings
         and then use dense_to_ttslice to introduce new cluster
@@ -9,12 +10,24 @@ def recluster(ttslice,cluster_new,decomposition):
     ttcur=[]
     ttcl=(1,)*len(cluster_new[0])
     for cl in cluster_new:
-        if all(x%y==0 for x,y in zip(ttcl,cl)):
-            ttcl=tuple(x//y for x,y in zip(ttcl,cl))
-            r,t=dense_to_ttslice(ttslice_to_dense(ttcur),ttcl,decomposition)
+        try:
+            while (not all(x%y==0 for x,y in zip(ttcl,cl))) or (len(ttcur)==0):
+                    ttcur.append(next(ttiter))
+                    ttcl=tuple(x*y for x,y in zip(ttcur[-1].shape[1:-1],ttcl))
+        except StopIteration:
+            #assume only 1s
+            inds=(slice(None),)+(None,)*len(cl)+(slice(None),)
+            ret.append(np.eye(ret[-1].shape[-1],like=ret[-1])[inds])
+            continue
+
+        # print(cl,ttcl,[t.shape for t in ttcur])
+        ttcl=tuple(x//y for x,y in zip(ttcl,cl))
+        if not all(x==1 for x in ttcl):
+            r,t=dense_to_ttslice(ttslice_to_dense(ttcur),(cl,ttcl),decomposition)
             ret.append(r)
-            ttcur.append(t)
+            ttcur=[t]
         else:
-            ttcur.append(next(ttiter))
-            ttcl=tuple(x*y for x,y in zip(ttcur[-1].shape[1:-1],ttcl))
+            ret.append(ttslice_to_dense(ttcur))
+            ttcur=[]
+    print(ret)
     return ret
