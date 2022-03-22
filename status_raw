@@ -9,7 +9,6 @@
   * find_orthogonality_center
   * multiply_ttslice
   * add_ttslice
-*Implemented
   * recluster
   * tensordot
   * left_truncate_svd, right_truncate_svd, svd_truncate
@@ -20,3 +19,4 @@
   * truncate_svd_with_singular_values
   * construct_diag_ttslice
   * extract_diag_ttslice
+  * locate_tensor

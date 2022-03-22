@@ -74,3 +74,5 @@ def ttslice_to_dense(ttslice):
         rshp=[ret.shape[0]]+[ret.shape[2*i+1]*ret.shape[2*i+2] for i in range(r)]+[ret.shape[-1]]
         ret=ret.reshape(rshp)
     return ret
+def locate_tensor(i,cluster):
+    pass

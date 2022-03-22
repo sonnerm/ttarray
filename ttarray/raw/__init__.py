@@ -1,5 +1,6 @@
 from .array_conversion import dense_to_ttslice,ttslice_to_dense
 from .array_conversion import find_balanced_cluster,trivial_decomposition
+from .array_conversion import locate_tensor
 from .canonical import canonicalize,left_canonicalize,right_canonicalize
 from .canonical import is_canonical,is_left_canonical,is_right_canonical
 from .canonical import shift_orthogonality_center,find_orthogonality_center

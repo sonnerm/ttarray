@@ -24,6 +24,15 @@ def test_tensordot_r2_r1(seed_rng,shape_cluster_r2):
         right_canonicalize(ttres)
         check_raw_ttslice_dense(ttres,np.asarray(res,ttres[0].dtype),cl0,calc_chi(cl0,4,9))
 
+        ttres=tensordot(mttar,vttar0,((0,),(0,)))
+        res=np.tensordot(mar,var0,((1,),(1,))).transpose([0,3,1,2,4])
+        res=res.reshape((res.shape[0]*res.shape[1],res.shape[2],res.shape[3]*res.shape[4]))
+        check_raw_ttslice_dense(ttres,res,cl1,None)
+        #normalize_chi (no truncation!)
+        left_canonicalize(ttres)
+        right_canonicalize(ttres)
+        check_raw_ttslice_dense(ttres,np.asarray(res,ttres[0].dtype),cl1,calc_chi(cl1,4,9))
+
 
 
 # def test_tensordot_r1_r1(seed_rng,shape_cluster_r1):

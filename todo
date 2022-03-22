@@ -1,6 +1,4 @@
-* Priorities:
-  - test tensordot
-  Think about ownership of data
+Think about ownership of data
 * document everything
 recluster should give optimal chi
 Large shape + clusters for tests

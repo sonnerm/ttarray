@@ -14,14 +14,14 @@ def dense_singular_values(ar,cluster):
     cl=(1,)*len(ar.shape[1:-1])
     arsh=ar.shape
     svds=[]
-    for c in (((1,)*len(cl),)+cluster):
+    for c in cluster:
         cl=tuple(i*ic for i,ic in zip(cl,c))
         ari=ar.reshape((arsh[0],)+sum(((cc,i//cc) for i,cc in zip(arsh[1:-1],cl)),())+(arsh[-1],))
         tp=(0,)+tuple(range(1,2*len(cl)+1,2))+tuple(range(2,2*len(cl)+1,2))+(-1,)
         ari=ari.transpose(tp)
         ari=ari.reshape((arsh[0]*_product(cl),-1))
         svds.append(la.svd(ari,compute_uv=False))
-    return svds
+    return svds[:-1]
 
 def _product(seq):
     return functools.reduce(lambda x,y:x*y, seq,1)
