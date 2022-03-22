@@ -21,3 +21,4 @@ def test_recluster_float(seed_rng,shape_recluster):
     for c in clusters:
         ttar=recluster(ttar,c)
         check_raw_ttslice_dense(ttar,ar,c,None)
+        # check_raw_ttslice_dense(ttar,ar,c,calc_chi(c,2,3))

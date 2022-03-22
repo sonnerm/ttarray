@@ -4,7 +4,9 @@ def recluster(ttslice,cluster_new,decomposition=trivial_decomposition):
     '''
         Straightforward reclustering algorithm: join sites until both clusterings
         and then use dense_to_ttslice to introduce new cluster
+        TODO: overhaul this function, incredibly fragile right now
     '''
+
     ttiter=ttslice.__iter__()
     ret=[]
     ttcur=[]
@@ -15,7 +17,7 @@ def recluster(ttslice,cluster_new,decomposition=trivial_decomposition):
                     ttcur.append(next(ttiter))
                     ttcl=tuple(x*y for x,y in zip(ttcur[-1].shape[1:-1],ttcl))
         except StopIteration:
-            #assume only 1s
+            #assume only 1s left
             inds=(slice(None),)+(None,)*len(cl)+(slice(None),)
             ret.append(np.eye(ret[-1].shape[-1],like=ret[-1])[inds])
             continue
@@ -29,5 +31,4 @@ def recluster(ttslice,cluster_new,decomposition=trivial_decomposition):
         else:
             ret.append(ttslice_to_dense(ttcur))
             ttcur=[]
-    print(ret)
     return ret
