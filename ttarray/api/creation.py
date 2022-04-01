@@ -165,7 +165,7 @@ def diag(v,k=0):
 @implement_function("array","array")
 def array(ar, dtype=None, cluster=None, copy=True,*,ndim=0):
     if isinstance(ar,TensorTrainArray):
-        #copy if necessary
+        #copy if necessary, recluster if necessary
         pass
     elif isinstance(ar,TensorTrainSlice):
         #just recast, clustering is then a bit weird, recluster afterwards
@@ -190,7 +190,6 @@ def slice(ar, dtype=None, cluster=None, copy=True,*,ndim=0):
         pass
     else:
         return TensorTrainSlice.fromdense(ar,dtype,cluster)
-
 @implement_function("asarray","array")
 def asarray(ar, dtype=None,cluster=None):
     return array(ar,dtype,cluster=cluster,copy=False)
@@ -232,7 +231,7 @@ def fromfunction_slice(function, shape, dtype=float, cluster=None, **kwargs):
 @implement_function()
 def copy(a,*,order=None,subok=None):
     if isinstance(a,TensorTrainArray) or isinstance(a,TensorTrainSlice):
-        return a.__class__.frommatrices([np.copy(x) for x in a.asmatrices()])
+        return a.copy()
     else:
         return NotImplemented
 
@@ -258,7 +257,7 @@ def linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None, axis
 
 @implement_function("logspace","array")
 def logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0,cluster=None):
-    return NotImplemented
+    raise NotImplementedError("not yet")
 
 # @implement_function("logspace","slice")
 # def logspace_slice(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0,cluster=None):
@@ -266,7 +265,7 @@ def logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None, axis=0,c
 
 @implement_function("geomspace","array")
 def geomspace(start, stop, num=50, endpoint=True, dtype=None, axis=0,cluster=None):
-    return NotImplemented
+    raise NotImplementedError("not yet")
 
 # @implement_function("geomspace","slice")
 # def geomspace_slice(start, stop, num=50, endpoint=True, dtype=None, axis=0,cluster=None):

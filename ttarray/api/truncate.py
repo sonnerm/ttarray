@@ -1,3 +1,3 @@
 from ..dispatch import implement_function
-def truncate(a):
-    return a
+def truncate(a,**kwargs):
+    return a.truncate(a,**kwargs)

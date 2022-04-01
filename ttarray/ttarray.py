@@ -30,7 +30,7 @@ def implement_ufunc(ufunc,method,selector=None):
 
 
 def _product(seq):
-    return reduce(lambda a,b:a*b,seq,1)
+    return reduce(lambda a,b:a*b,seq,1) #can't use np.prod since might overflow
 def _flatten_ttslice(seq):
     ret=[]
     for s in seq:
@@ -38,6 +38,11 @@ def _flatten_ttslice(seq):
             ret.extend(s._data)
         ret.append(s)
     return ret
+def _normalize_axes(axes):
+    if axes==None:
+        axes=list(range(r))[::-1]
+    axes=[a if a>0 else L+a for a in axes]
+    return axes
 
 class TensorTrainBase:
     # So far this is just for isinstance
@@ -137,6 +142,19 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
             Doesn't copy, if invariants are violated that is your problem
         '''
         return self._data
+    def setmatrices(self,dat):
+        bup=self._data
+        self._data=list(self.dat)#shallow copy to prevent outside reference
+        try:
+            self._check_consistency()
+        except ValueError as e:
+            self._data=bup
+            raise e
+
+    def setmatrices_unchecked(self,dat):
+        self._data=dat
+
+
     def __array_function__(self,func,types,args,kwargs):
         f=HANDLER_FUNCTION_SLICE.get(func.__name__,None)
         if f is None:
@@ -147,6 +165,23 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         if f is None:
             return NotImplemented
         return f(*args,**kwargs)
+    def transpose(self,*axes):
+        r=len(self.shape)
+        axes=_normalize_axes(axes)
+        if axes[0]!=0 and axes[-1]!=r:
+            raise NotImplementedError("transposing of the boundaries of a TensorTrainSlice is not supported yet")
+        else:
+            return self.__class__.frommatrices([x.transpose(axes) for x in a.M])
+    def recluster(self,newcluster=None,copy=False):
+        if newcluster is None:
+            newcluster = raw.find_balanced_cluster(self.shape)
+        if not copy:
+            self.setmatrices_unchecked(raw.recluster_ttslice(self.asmatrices_unchecked()))
+            return self
+        else:
+            self.__class__.frommatrices(raw.recluster_ttslice(self.asmatrices()))
+    def copy(self):
+        return self.__class__.frommatrices([x.copy() for x in self.asmatrices_unchecked()])
 
 class _TensorTrainArrayData(_TensorTrainSliceData):
     def __setitem__(self,ind,it):
@@ -218,3 +253,25 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
         if f is None:
             return NotImplemented
         return f(*args,**kwargs)
+
+    def transpose(self,*axes):
+        r=len(self.shape)
+        axes=_normalize_axes(axes)
+        naxes=[0]+axes+[r]
+        return self.__class__.frommatrices([x.transpose(naxes) for x in a.M])
+    def recluster(self,newcluster=None,copy=False):
+        tts=self._tts.recluster(newcluster,copy)
+        if not copy:
+            return self
+        else:
+            self.__class__.fromslice(tts)
+    def copy(self):
+        return self.fromslice(self._tts.copy())
+
+    def setmatrices(self,dat):
+        if dat[0].shape[0]!=1 or dat[-1].shape[-1]!=1:
+            raise ValueError("TensorTrainArrays cannot have a non-contracted boundary")
+        self._tts.setmatrices(dat)
+
+    def setmatrices_unchecked(self,dat):
+        self._tts.setmatrices_unchecked(dat)
