@@ -10,3 +10,16 @@ def tensordot(a,b,axes=2):
             pass
     else:
         pass
+
+@implement_ufunc("matmul","__call__")
+def matmul(x,y):
+    if not isinstance(x,TensorTrainBase) and isinstance(y,TensorTrainBase):
+        return NotImplemented
+    if len(x.shape)==len(y.shape):
+        tensordot(x,y,axes=((len(x.shape)-1,),(len(y.shape)-2,)))
+    if len(x.shape)==len(y.shape)-1:
+        tensordot(x,y,axes=((len(x.shape)-1,),(len(y.shape)-2,)))
+    if len(y.shape)==len(x.shape)-1:
+        tensordot(x,y,axes=((len(x.shape)-1,),(len(y.shape)-1)))
+    else:
+        raise ValueError("shapes are not consistent")
