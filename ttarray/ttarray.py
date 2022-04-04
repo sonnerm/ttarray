@@ -79,9 +79,13 @@ class _TensorTrainSliceData:
         return self._tts._data.__iter__()
 
 class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
-    def __init__(self,matrices):
+    def __init__(self,matrices,center=None):
         self._data=matrices
+        self._center=center #orthogonality center
         self._check_consistency()
+    @property
+    def center(self):
+        return self._center
     @property
     def M(self):
         return _TensorTrainSliceData(self)
@@ -117,6 +121,22 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
             if m.shape[0]!=nd:
                 raise ValueError("The virtual bonds need to be consistent")
             nd=m.shape[-1]
+    def is_canonical(self,center=None):
+        if self._center is not None and (center is None or center==self._center):
+            return True
+        elif center is not None:
+            if raw.is_canonical(self.asmatrices_unchecked(),center):
+                self._center=center
+                return True
+            else:
+                return False
+        else:
+            self._center=raw.find_orthogonality_center(self.asmatrices_unchecked())
+            return self._center is not None
+            
+    def canonicalize(self):
+        pass
+
     @classmethod
     def frommatrices(cls,matrices):
         return cls(matrices)
@@ -208,7 +228,6 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
     @property
     def cluster(self):
         return self._tts.cluster
-
     @property
     def chi(self):
         return self._tts.chi
@@ -218,6 +237,9 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
     @property
     def L(self):
         return self._tts.L
+    @property
+    def center(self):
+        return self._tts.center
 
     def __repr__(self):
         return "TensorTrainArray<dtype=%s, shape=%s, L=%s, cluster=%s, chi=%s>"%(self.dtype,self.shape,self.L,self.cluster,self.chi)
@@ -275,3 +297,8 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
 
     def setmatrices_unchecked(self,dat):
         self._tts.setmatrices_unchecked(dat)
+    def canonicalize(self):
+        return self._tts.canonicalize()
+
+    def is_canonical(self):
+        return self._tts.is_canonical()

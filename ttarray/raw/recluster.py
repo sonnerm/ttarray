@@ -1,6 +1,6 @@
 from .array_conversion import dense_to_ttslice,ttslice_to_dense, trivial_decomposition
 import numpy as np
-def recluster_ttslice(ttslice,cluster_new,decomposition=trivial_decomposition):
+def recluster(ttslice,cluster_new,decomposition=trivial_decomposition):
     '''
         Straightforward reclustering algorithm: join sites until both clusterings
         and then use dense_to_ttslice to introduce new cluster
