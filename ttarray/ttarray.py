@@ -1,4 +1,5 @@
 import numpy as np
+import numpy.linalg as la
 import copy
 from functools import reduce
 from .raw import ttslice_to_dense,dense_to_ttslice,trivial_decomposition,find_balanced_cluster
@@ -45,6 +46,11 @@ def _normalize_axes(axes):
     return axes
 
 class TensorTrainBase:
+    '''
+        Common base class for :py:type:`TensorTrainSlice` and
+        :py:type:`TensorTrainArray`. At the moment it is just used with
+        :py:func:`isinstance`
+    '''
     # So far this is just for isinstance
     pass
 
@@ -79,18 +85,59 @@ class _TensorTrainSliceData:
         return self._tts._data.__iter__()
 
 class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
+    '''
+        Represents a TensorTrain with uncontracted boundaries which correspond
+        to the first and last dimension.
+    '''
     def __init__(self,matrices,center=None):
+        '''
+            Construct a TensorTrainSlice from a list of matrices and
+            orthogonality center. The arguments to the constructor might change,
+            use :py:meth:`TensorTrainSlice.frommatrices` or
+            :py:meth:`frommatrices_slice` instead. NB: Only checks the
+            consistency of bonds, not the canonical property.
+        '''
         self._data=matrices
         self._center=center #orthogonality center
         self._check_consistency()
     @property
     def center(self):
+        '''
+            Orthogonality center of the TensorTrainSlice, ``None`` if unknown or
+            TensorTrainSlice not in canonical form. Does not perform any
+            calculations and thus runs in O(1)
+        '''
         return self._center
+    def setcenter_unchecked(self,center):
+        '''
+            Sets the orthogonality center to ``center`` without checking if the
+            TensorTrainSlice is really canonical with this orthogonality center.
+            This method is intended for cases where the canonical property is
+            ensured
+        '''
+        self._center=center
+    def clearcenter(self):
+        '''
+            Clears the stored value of the orthogonality center, should be
+            invoked after each operation which might violate the canonical
+            property.
+        '''
+        self._center=None
     @property
     def M(self):
+        '''
+            Gives access to the underlying matrices in a safe way, handles very
+            similar to a bare python ``list``, but ensures that invariants are
+            upheld at any step
+        '''
         return _TensorTrainSliceData(self)
     @property
     def shape(self):
+        '''
+            Returns the shape of the TensorTrainSlice as a tuple of (python!)
+            integers. Since TensorTrains can represent very large vectors the
+            entries can easily overflow 64 bit integers.
+        '''
         rank=len(self._data[0].shape)
         shape=[self._data[0].shape[0]]
         shape.extend([_product(c[d] for c in self.cluster) for d in range(rank-2)])
@@ -98,15 +145,27 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         return tuple(shape)
     @property
     def cluster(self):
+        '''
+            the external dimensions of each tensor in the TensorTrainSlice.
+        '''
         return tuple(m.shape[1:-1] for m in self._data)
     @property
     def chi(self):
+        '''
+            the internally contracted (virtual) dimensions of the TensorTrainSlice
+        '''
         return tuple(m.shape[0] for m in self._data[1:])
     @property
     def L(self):
+        '''
+            the number of tensors in the TensorTrainSlice
+        '''
         return len(self._data)
     @property
     def dtype(self):
+        '''
+            the dtype of the TensorTrainSlice
+        '''
         return np.result_type(*self._data) #maybe enforce all matrices to the same dtype eventually
     def __repr__(self):
         return "TensorTrainSlice<dtype=%s, shape=%s, L=%s, cluster=%s, chi=%s>"%(self.dtype,self.shape,self.L,self.cluster,self.chi)
@@ -122,6 +181,15 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
                 raise ValueError("The virtual bonds need to be consistent")
             nd=m.shape[-1]
     def is_canonical(self,center=None):
+        '''
+            Checks if the TensorTrainSlice is in canonical form with the given
+            orthogonality center ``center``. If no center is provided it will
+            find the first orthogonality center if it exists and set
+            py:property:center accordingly.
+            :returns True if self is canonical with orthogonality center
+            ``center``, False otherwise
+
+        '''
         if self._center is not None and (center is None or center==self._center):
             return True
         elif center is not None:
@@ -133,8 +201,30 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         else:
             self._center=raw.find_orthogonality_center(self.asmatrices_unchecked())
             return self._center is not None
-            
-    def canonicalize(self):
+
+    def canonicalize(self,center=None,copy=False,qr=la.qr):
+        '''
+            Canonicalizes the TensorTrainSlice
+        '''
+        if copy:
+            ret=self.copy()
+        else:
+            ret=self
+        if self._center is None:
+            raw.canonicalize(ret.asmatrices_unchecked(),center,qr=qr)
+            ret._center=center
+        else:
+            raw.shift_orthogonality_center(ret.asmatrices_unchecked(),self._center,center,qr=qr)
+            ret._center=center
+        return ret
+    def singular_values(self,copy=False,qr=la.qr,svd=la.svd):
+        # if copy:
+        #     ret=self.copy()
+        # else:
+        #     ret=self
+        # if ret._center is None:
+        #     ret.canonicalize(-1,qr=qr)
+        # return raw.singular_values(ret.asmatrices_unchecked(),center,svd=svd)
         pass
 
     @classmethod
@@ -154,7 +244,7 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         return ttslice_to_dense(self._data)
     def asmatrices(self):
         '''
-            This method is called 'asmatrices' since it returns a view
+            Returns a shallow copy of the list of underlying matrices.
         '''
         return list(self._data) #shallow copy to protect invariants
     def asmatrices_unchecked(self):
@@ -173,7 +263,6 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
 
     def setmatrices_unchecked(self,dat):
         self._data=dat
-
 
     def __array_function__(self,func,types,args,kwargs):
         f=HANDLER_FUNCTION_SLICE.get(func.__name__,None)
