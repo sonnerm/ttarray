@@ -1,5 +1,5 @@
 import numpy as np
-from .. import check_ttarray_dense,check_ttslice_dense,random_array
+from ... import check_ttarray_dense,check_ttslice_dense,random_array
 from ttarray import array,asarray,asanyarray,asanyslice,asslice,slice
 import pytest
 import functools

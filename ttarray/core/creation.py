@@ -1,5 +1,6 @@
-from .. import TensorTrainArray,TensorTrainSlice
-from ..ttarray import implement_function
+from .array import TensorTrainArray
+from .slice import TensorTrainSlice
+from .dispatch import implement_function
 from ..raw import find_balanced_cluster,trivial_decomposition
 import numpy as np
 def _get_cluster_chi_array(shape,cluster,chi):

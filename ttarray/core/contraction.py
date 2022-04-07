@@ -1,5 +1,5 @@
 import numpy as np
-from .. import implement_function
+from .dispatch import implement_function,implement_ufunc
 @implement_function
 def tensordot(a,b,axes=2):
     if isinstance(a,TensorTrainArray):

@@ -1,6 +1,6 @@
 import numpy as np
 from ttarray import ones,ones_like,ones_slice
-from .. import check_ttarray_dense,check_ttslice_dense
+from ... import check_ttarray_dense,check_ttslice_dense
 ARRAY_PROTOTYPE=ones((1,),int,((1,),),2)
 SLICE_PROTOTYPE=ones_slice((2,2,3),int,((2,),),2)
 def test_ones_ttarray(shape_cluster):

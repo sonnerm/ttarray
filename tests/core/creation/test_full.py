@@ -1,5 +1,5 @@
 import numpy as np
-from .. import check_ttarray_dense,check_ttslice_dense
+from ... import check_ttarray_dense,check_ttslice_dense
 from ttarray import full,full_like,full_slice
 import pytest
 ARRAY_PROTOTYPE=full((1,),5,int,((1,),),2)

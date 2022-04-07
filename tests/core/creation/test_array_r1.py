@@ -1,4 +1,4 @@
-from .. import random_array,check_ttarray_dense
+from ... import random_array,check_ttarray_dense
 import numpy as np
 from ttarray import frombuffer,fromiter
 from ttarray import ones_slice

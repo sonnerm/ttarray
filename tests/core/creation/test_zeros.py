@@ -1,6 +1,6 @@
 import numpy as np
 from ttarray import zeros,zeros_like,zeros_slice
-from .. import check_ttarray_dense,check_ttslice_dense
+from ... import check_ttarray_dense,check_ttslice_dense
 ARRAY_PROTOTYPE=zeros((1,),int,((1,),),2)
 SLICE_PROTOTYPE=zeros_slice((2,2,3),int,((2,),),2)
 def test_zeros_ttarray(shape_cluster):
