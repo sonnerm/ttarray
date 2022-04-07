@@ -18,9 +18,21 @@ class _TensorTrainArrayData(_TensorTrainSliceData):
 
 class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
     '''
+        TensorTrainArray represents a ndimensional array in tensor train format.
 
+        For performance reasons, all data is assumed to be *owned* by the
+        TensorTrainArray instance. All functions, except those which end in
+        *_unchecked will *copy* data if appropriate.
     '''
     def __init__(self,tts):
+        '''
+           Creates a TensorTrainArray from a TensorTrainSlice where the boundary dimensions are both 1.
+
+           This constructor is **not** part of the stable API and might change
+           in the future. Do **not** use it in downstream projects. Instead use
+           :py:meth:`TensorTrainArray.fromslice` or
+           :py:meth:`TensorTrainArray.fromslice_unchecked` as appropriate
+        '''
         if tts._data[0].shape[0]!=1 or tts._data[-1].shape[-1]!=1:
             raise ValueError("TensorTrainArrays cannot have a non-contracted boundary")
         self._tts=tts
@@ -57,14 +69,22 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
         return self._tts.todense()[0,...,0]
     @classmethod
     def frommatrices(cls,mpl):
-        return cls(TensorTrainSlice(mpl))
+        return cls(TensorTrainSlice.frommatrices(mpl))
+    @classmethod
+    def frommatrices_unchecked(cls,mpl):
+        return cls(TensorTrainSlice.frommatrices_unchecked(mpl))
     @classmethod
     def fromslice(self,tts):
-        return cls(mps)
+        return cls(tts.copy())
+    @classmethod
+    def fromslice_unchecked(self,tts):
+        return cls(tts)
     def asslice(self):
-        return copy.copy(self._tts) #shallow copy necessary to protect invariants, stilll a view
+        return self._tts.copy()
+    def asslice_unchecked(self):
+        return self._tts
     def asmatrices(self):
-        return self._tts.asmatrices() #already does shallow copying
+        return self._tts.asmatrices() #already does copying
     def asmatrices_unchecked(self):
         return self._tts.asmatrices_unchecked()
     def __array_function__(self,func,types,args,kwargs):

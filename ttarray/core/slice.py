@@ -52,18 +52,24 @@ class _TensorTrainSliceData:
 
 class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
     '''
-        Represents a TensorTrain with uncontracted boundaries which correspond
-        to the first and last dimension.
+        Represents a array in tensor train format with uncontracted boundaries.
+        The first and last dimension correspond to the open boundaries. For
+        performance reasons, all data is assumed to be *owned* by the
+        TensorTrainSlice instance. To ensure this, all functions, except those
+        which end in *_unchecked will *copy* data if appropriate.
     '''
-    def __init__(self,matrices,center=None):
+    def __init__(self,data,center=None):
         '''
             Construct a TensorTrainSlice from a list of matrices and
-            orthogonality center. The arguments to the constructor might change,
-            use :py:meth:`TensorTrainSlice.frommatrices` or
-            :py:meth:`frommatrices_slice` instead. NB: Only checks the
-            consistency of bonds, not the canonical property.
+            orthogonality center.
+
+            It is strongly advised to **not** use this constructor in downstream
+            projects, since its arguments and semantics might change between
+            releases.
+            `data` is not copied and can violate invariants if modified outside
+            of the TensorTrainSlice class.
         '''
-        self._data=matrices
+        self._data=data
         self._center=center #orthogonality center
         self._check_consistency()
     @property
@@ -71,7 +77,7 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         '''
             Orthogonality center of the TensorTrainSlice, ``None`` if unknown or
             TensorTrainSlice not in canonical form. Does not perform any
-            calculations and thus runs in O(1)
+            calculations.
         '''
         return self._center
     def setcenter_unchecked(self,center):
@@ -100,9 +106,12 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
     @property
     def shape(self):
         '''
-            Returns the shape of the TensorTrainSlice as a tuple of (python!)
-            integers. Since TensorTrains can represent very large vectors the
-            entries can easily overflow 64 bit integers.
+            tuple(int): shape of the TensorTrainSlice as tuple of python integers.
+
+            Note
+            -----
+            tensor trains can represent very high-dimensional arrays, the
+            dimensions do not necessarily fit in a 64 bit integer!
         '''
         rank=len(self._data[0].shape)
         shape=[self._data[0].shape[0]]
@@ -111,26 +120,22 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         return tuple(shape)
     @property
     def cluster(self):
-        '''
-            the external dimensions of each tensor in the TensorTrainSlice.
-        '''
+        ''' tuple(tuple(int)): the external dimensions of each tensor in the TensorTrainSlice. '''
         return tuple(m.shape[1:-1] for m in self._data)
     @property
     def chi(self):
-        '''
-            the internally contracted (virtual) dimensions of the TensorTrainSlice
-        '''
+        ''' int: the internal ('virtual') dimensions of the TensorTrainSlice'''
         return tuple(m.shape[0] for m in self._data[1:])
     @property
     def L(self):
         '''
-            the number of tensors in the TensorTrainSlice
+            int: the number of tensors in the TensorTrainSlice
         '''
         return len(self._data)
     @property
     def dtype(self):
         '''
-            the dtype of the TensorTrainSlice
+            numpy.dtype: the dtype of the TensorTrainSlice
         '''
         return np.result_type(*self._data) #maybe enforce all matrices to the same dtype eventually
     def __repr__(self):
@@ -196,9 +201,32 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
     @classmethod
     def frommatrices(cls,matrices):
         '''
-            Build a TensorTrainSlice from a list of matrices with the internal indices being first and last
+            Build a TensorTrainSlice from a list of matrices with the internal
+            indices being first and last. Copys the matrices to prevent violation
+            of invariants through references outside of the new instance.
+            See also:
+            =========
+            frommatrices_slice
+            TensorTrainSlice.frommatrices_unchecked
+            TensorTrainArray.frommatrices
+        '''
+        return cls([x.copy() for x in matrices])
+
+    @classmethod
+    def frommatrices_unchecked(cls,matrices):
+        '''
+            Build a TensorTrainSlice from a list of matrices with the internal
+            indices being first and last. Doesn't copy matrices, reuse of old
+            references can lead to violation of invariants
+            See also:
+            =========
+            frommatrices_slice_unchecked
+            TensorTrainSlice.frommatrices
+            TensorTrainArray.frommatrices_unchecked
+
         '''
         return cls(matrices)
+
     def __array__(self,dtype=None):
         '''
             Implementation of the numpy ``__array__`` protocol. See
@@ -230,7 +258,8 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         return [x.copy() for x in self._data]
     def asmatrices_unchecked(self):
         '''
-            Doesn't copy, if invariants are violated that is your problem
+            Returns the list of matrices which make up the TensorTrainSlice.
+            Doesn't copy, if invariants are violated that is your problem.
         '''
         return self._data
     def setmatrices(self,dat):
@@ -240,10 +269,13 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
             self._check_consistency()
             self.clearcenter()
         except ValueError as e:
-            self._data=bup
+            self._data=bup #restore old values in case of error
             raise e
 
     def setmatrices_unchecked(self,dat):
+        '''
+            Sets the data for this instance of TensorTrainSlice, doesn't perform any checks, nor copying
+        '''
         self._data=dat
 
     def __array_function__(self,func,types,args,kwargs):
