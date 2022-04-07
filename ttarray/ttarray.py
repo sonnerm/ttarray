@@ -229,11 +229,22 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
 
     @classmethod
     def frommatrices(cls,matrices):
+        '''
+            Build a TensorTrainSlice from a list of matrices with the internal indices being first and last
+        '''
         return cls(matrices)
     def __array__(self,dtype=None):
+        '''
+            Implementation of the numpy ``__array__`` protocol. See
+            :py:func:``ndarray.__array__``
+        '''
         return np.asarray(self.todense(),dtype)
     @classmethod
     def fromdense(cls,ar,dtype=None,cluster=None):
+        '''
+            Convert a dense array into a TensorTrainSlice. Only does copying and
+            initializing, O(nitems).
+        '''
         if cluster is None:
             cluster=find_balanced_cluster(np.shape(ar)[1:-1])
         if dtype is not None:
@@ -241,12 +252,16 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         tts=dense_to_ttslice(ar,cluster,trivial_decomposition)
         return cls.frommatrices(tts)
     def todense(self):
+        '''
+            Convert ``self`` into a dense array of the same kind as the
+            underlying data
+        '''
         return ttslice_to_dense(self._data)
     def asmatrices(self):
         '''
-            Returns a shallow copy of the list of underlying matrices.
+            Returns a copy of the list of underlying matrices.
         '''
-        return list(self._data) #shallow copy to protect invariants
+        return [x.copy() for x in self._data]
     def asmatrices_unchecked(self):
         '''
             Doesn't copy, if invariants are violated that is your problem
@@ -254,9 +269,10 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         return self._data
     def setmatrices(self,dat):
         bup=self._data
-        self._data=list(self.dat)#shallow copy to prevent outside reference
+        self._data=[x.copy() for x in self.dat]
         try:
             self._check_consistency()
+            self.clearcenter()
         except ValueError as e:
             self._data=bup
             raise e

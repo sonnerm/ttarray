@@ -1,5 +1,5 @@
 This package provides a library for calculations with multi dimensional arrays
-in the tensor train format. Vectors in this format are well known in the
+in the tensor train format. This Vectors in this format are well known in the
 computational quantum physics world as matrix product states (MPS). This format
 allows us to represent and manipulate low-entangled quantum states in very
 high-dimensional Hilbert spaces (even something like 2^200 dimensional !). It
