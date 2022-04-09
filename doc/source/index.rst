@@ -23,8 +23,9 @@ performed efficiently on tensor trains! Additional methods specific to the
 TensorTrain format are provided as well.
 
 Under the hood, the data is stored as a normal python list of numpy (or
-numpy-compatible) ndarrays which can be retrieved and manipulated manually. The
-raw namespace provides the basic algorithm which can be aplied to this format.
+numpy-compatible) ndarrays which can be retrieved and manipulated manually if
+necessary. The raw namespace provides the basic algorithm which can be aplied to
+this format.
 
 .. note::
   This project is at present very much a work in progress and should be
@@ -33,6 +34,9 @@ raw namespace provides the basic algorithm which can be aplied to this format.
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+
+   ownership
+   tensortrain
 
 .. Indices and tables
 .. ==================

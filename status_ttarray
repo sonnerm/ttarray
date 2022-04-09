@@ -1,12 +1,13 @@
 Finish this list ....
 * Implemented
   * shape, cluster, chi, dtype
+  * __repr__
 
 * Todo
   * easy
     - ndim, size, itemsize, nbytes, base
     - .astype
-    - __repr__, __str__
+    - __str__
     - __float__, __int__, __complex__
     - .T
     - .real, .imag
