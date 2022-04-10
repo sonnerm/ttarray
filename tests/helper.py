@@ -1,34 +1,49 @@
 import numpy as np
 import pytest
-from ttarray import TensorTrainArray,TensorTrainSlice
+import ttarray as tt
 import functools
-def check_ttarray_dense(tt,ar,cluster,chi):
+TINY_SHAPE={}
+TINY_SHAPE[()]=[((),),((),()),((),(),()),((),(),(),())]
+TINY_SHAPE[(1,)]=[((1,),),((1,),(1,)),((1,),(1,),(1,)),((1,),(1,),(1,),(1,))]
+TINY_SHAPE[(1,1)]=[((1,1),),((1,1),(1,1)),((1,1),(1,1),(1,1),(1,1))]
+TINY_SHAPE[(1,1,1)]=[((1,1,1),),((1,1,1),(1,1,1),(1,1,1),(1,1,1))]
+TINY_SHAPE[(2,)]=[((2,),),((2,),(1,)),((1,),(2,),(1,)),((1,),(2,))]
+DENSE_SHAPE=dict(TINY_SHAPE)
+DENSE_SHAPE[(16,)]=[((2,),(2,),(2,),(2,))]
+DENSE_SHAPE[(24,)]=[((3,),(2,),(2,),(2,))]
+DENSE_SHAPE[(30,)]=[((5,),(3,),(2,))]
+DENSE_SHAPE[(128,)]=[((2,),(2,),(2,),(2,),(2,),(2,),(2,))]
+
+LARGE_SHAPE={}
+LARGE_SHAPE[(2**90,)]=[((2,),)*90,((4,),)*45,((4,),(2,))*30,((2,),(4,))*30]
+LARGE_SHAPE[(2**90,2**90)]=[((2,2),)*90,((4,4),)*45,((4,2),(2,4))*30,((2,2),(4,4))*30,((2,4),(4,2))*30]
+def check_dense(tta,ar,cluster,chi,typ):
     __traceback_hide__ = True
-    assert isinstance(tt,TensorTrainArray)
-    assert tt.cluster == cluster
+    assert isinstance(tta,typ)
+    assert tta.cluster == cluster
     if chi is not None:
-        assert tt.chi == chi
-    assert tt.shape == ar.shape
-    assert tt.dtype == ar.dtype
-    arb=np.array(tt)
-    print(arb)
+        assert tta.chi == chi
+    assert tta.shape == ar.shape
+    assert tta.dtype == ar.dtype
+    arb=np.array(tta)
     assert type(arb)==np.ndarray
     assert arb == pytest.approx(ar)
 
-def check_ttslice_dense(tt,ar,cluster,chi):
+def check_constant(tta,val,shape,cluster,chi,typ):
     __traceback_hide__ = True
-    assert isinstance(tt,TensorTrainSlice)
-    assert tt.cluster == cluster
+    assert isinstance(tta,typ)
+    assert tta.cluster == cluster
     if chi is not None:
-        assert tt.chi == chi
-    assert tt.shape == ar.shape
-    assert tt.dtype == ar.dtype
-    arb=np.array(tt)
-    assert type(arb)==np.ndarray
-    assert arb == pytest.approx(ar)
-def check_raw_ttslice_dense(tt,ar,cluster,chi):
+        assert tta.chi == chi
+    assert tta.shape == shape
+    assert tta.dtype == np.dtype(type(val))
+    #check actual value
+    #assert tt.sum(tt.asfarray(tta))==pytest.approx(functools.reduce(lambda x,y:x*y,tta.shape)*val)
+    #assert tta.conj()@tta==functools.reduce(lambda x,y:x*y,tta.shape)*val**2
+
+def check_raw_ttslice_dense(tta,ar,cluster,chi):
     __traceback_hide__ = True
-    check_ttslice_dense(TensorTrainSlice.frommatrices(tt),ar,cluster,chi)
+    check_dense(tt.TensorTrainSlice.frommatrices(tta),ar,cluster,chi,tt.TensorTrainSlice)
 def random_array(shape,dtype):
     if np.dtype(dtype).kind=="i":
         return np.random.randint(-10000000,10000000,size=shape,dtype=dtype)
@@ -38,7 +53,10 @@ def random_array(shape,dtype):
         return np.array(np.random.randn(*shape)+1.0j*np.random.randn(*shape),dtype=dtype)
     else:
         raise NotImplementedError("unknown dtype")
-
+def random_ttarray(shape,dtype,cluster,chi):
+    pass
+def random_ttslice(shape,dtype,cluster,chi):
+    pass
 def _product(seq):
     return functools.reduce(lambda x,y:x*y, seq,1)
 def calc_chi(cluster,lefti=1,righti=1):
