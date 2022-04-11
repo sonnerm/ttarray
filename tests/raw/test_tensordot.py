@@ -3,6 +3,7 @@ from .. import random_array,check_raw_ttslice_dense,calc_chi
 import numpy.linalg as la
 import numpy as np
 import pytest
+'''
 def test_tensordot_r2_r1(seed_rng,shape_cluster_r2):
     shape,cluster=shape_cluster_r2
     shape=(2,)+shape+(3,)
@@ -34,7 +35,7 @@ def test_tensordot_r2_r1(seed_rng,shape_cluster_r2):
         check_raw_ttslice_dense(ttres,np.asarray(res,ttres[0].dtype),cl1,calc_chi(cl1,4,9))
 
 
-
+'''
 # def test_tensordot_r1_r1(seed_rng,shape_cluster_r1):
 #     shape,cluster=shape_cluster_r1
 #
