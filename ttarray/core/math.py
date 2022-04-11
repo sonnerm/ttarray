@@ -2,6 +2,9 @@ import numpy as np
 from .creation import full,array
 from .reshape import recluster
 from .dispatch import implement_ufunc
+from .base import TensorTrainBase
+from .array import TensorTrainArray
+from .slice import TensorTrainSlice
 @implement_ufunc("add","__call__")
 def add(x,y):
     if np.isscalar(x) and np.isscalar(y):

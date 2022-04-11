@@ -74,7 +74,7 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
     def frommatrices_unchecked(cls,mpl):
         return cls(TensorTrainSlice.frommatrices_unchecked(mpl))
     @classmethod
-    def fromslice(self,tts):
+    def fromslice(cls,tts):
         return cls(tts.copy())
     @classmethod
     def fromslice_unchecked(self,tts):
@@ -92,8 +92,8 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
         if f is None:
             return NotImplemented
         return f(*args,**kwargs)
-    def __array_ufunc__(self,ufunc,method,args,kwargs):
-        f=HANDLER_UFUNC_ARRAY.get((ufunc,method),None)
+    def __array_ufunc__(self,ufunc,method,*args,**kwargs):
+        f=HANDLER_UFUNC_ARRAY.get((ufunc.__name__,method),None)
         if f is None:
             return NotImplemented
         return f(*args,**kwargs)

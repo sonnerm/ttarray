@@ -1,4 +1,3 @@
-from .. import raw
 import numpy.linalg as la
 
 def canonicalize(ar,center=None,copy=False,qr=la.qr):

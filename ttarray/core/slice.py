@@ -283,8 +283,11 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         if f is None:
             return NotImplemented
         return f(*args,**kwargs)
-    def __array_ufunc__(self,ufunc,method,args,kwargs):
-        f=HANDLER_UFUNC_SLICE.get((ufunc,method),None)
+    def __array_ufunc__(self,ufunc,method,*args,**kwargs):
+        '''
+            Implements the numpy __array_ufunc__ protocol for TensorTrainSlice
+        '''
+        f=HANDLER_UFUNC_SLICE.get((ufunc.__name__,method),None)
         if f is None:
             return NotImplemented
         return f(*args,**kwargs)
@@ -299,9 +302,9 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         if newcluster is None:
             newcluster = raw.find_balanced_cluster(self.shape)
         if not copy:
-            self.setmatrices_unchecked(raw.recluster_ttslice(self.asmatrices_unchecked()))
+            self.setmatrices_unchecked(raw.recluster(self.asmatrices_unchecked(),newcluster))
             return self
         else:
-            self.__class__.frommatrices(raw.recluster_ttslice(self.asmatrices()))
+            self.__class__.frommatrices(raw.recluster(self.asmatrices(),newcluster))
     def copy(self):
         return self.__class__.frommatrices([x.copy() for x in self.asmatrices_unchecked()])

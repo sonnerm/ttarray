@@ -271,11 +271,12 @@ def geomspace(start, stop, num=50, endpoint=True, dtype=None, axis=0,cluster=Non
 # @implement_function("geomspace","slice")
 # def geomspace_slice(start, stop, num=50, endpoint=True, dtype=None, axis=0,cluster=None):
 #     slice(np.geomspace(todense(start),todense(stop),num,endpoint,dtype,axis),cluster=cluster)
-
+# def fromdense(ar,dtype=None,cluster=None):
+#     return TensorTrainArray.fromdense(ar,dtype,cluster)
+# def fromdense_slice(ar,dtype,cluster):
+#     return TensorTrainSlice.fromdense(ar,dtype,cluster)
 def todense(ttar):
-    if isinstance(ttar,TensorTrainBase):
-        return ttar.todense()
-    return ttar
+    return ttar.todense()
 
 @implement_function("asfarray","array")
 def asfarray(ttar,dtype=None):
