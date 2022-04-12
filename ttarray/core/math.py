@@ -65,5 +65,5 @@ def multiply(x,y):
     if isinstance(y,TensorTrainSlice) and isinstance(x,TensorTrainArray):
         y=array(y)
     x=recluster(x,y.cluster,copy=True)
-    ntt=multiply_ttslice(x.asmatrices(),y.asmatrices())
+    ntt=raw.multiply_ttslice(x.asmatrices(),y.asmatrices())
     return x.__class__.frommatrices(ntt)
