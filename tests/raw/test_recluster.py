@@ -17,8 +17,6 @@ import itertools
 #     return request.param
 def test_recluster(seed_rng):
     for shape,cls in DENSE_SHAPE.items():
-        if len(shape)==0 or shape[0]==1:
-            continue
         shape=(2,)+shape+(3,)
         ar=random_array(shape,float)
         for c1 in cls:
