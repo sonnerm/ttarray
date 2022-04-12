@@ -108,7 +108,7 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
         if not copy:
             return self
         else:
-            self.__class__.fromslice(tts)
+            return self.__class__.fromslice(tts)
     def copy(self):
         return self.fromslice(self._tts.copy())
 

@@ -1,4 +1,5 @@
 import numpy as np
+import ttarray.raw as raw
 from .creation import full,array
 from .reshape import recluster
 from .dispatch import implement_ufunc
@@ -37,7 +38,7 @@ def add(x,y):
     if isinstance(y,TensorTrainSlice):
         y=array(y)
     x=recluster(x,y.cluster,copy=True)
-    ntt=add_ttslice(x.asmatrices(),y.asmatrices())
+    ntt=raw.add_ttslice(x.asmatrices(),y.asmatrices())
     return x.__class__.frommatrices(ntt)
 @implement_ufunc("multiply","__call__")
 def multiply(x,y):

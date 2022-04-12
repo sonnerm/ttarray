@@ -301,10 +301,14 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
     def recluster(self,newcluster=None,copy=False):
         if newcluster is None:
             newcluster = raw.find_balanced_cluster(self.shape)
+        if newcluster==self.cluster:
+            if copy:
+                return self.copy()
+            return self
         if not copy:
             self.setmatrices_unchecked(raw.recluster(self.asmatrices_unchecked(),newcluster))
             return self
         else:
-            self.__class__.frommatrices(raw.recluster(self.asmatrices(),newcluster))
+            return self.__class__.frommatrices(raw.recluster(self.asmatrices(),newcluster))
     def copy(self):
         return self.__class__.frommatrices([x.copy() for x in self.asmatrices_unchecked()])
