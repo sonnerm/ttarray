@@ -8,6 +8,6 @@ from .svd import shift_orthogonality_center_with_singular_values
 from .svd import singular_values,left_singular_values,right_singular_values
 from .svd import svd_truncate, left_truncate_svd, right_truncate_svd
 from .recluster import recluster
-from .tensordot import tensordot
+from .contraction import tensordot
 from .multiply import multiply_ttslice
 from .add import add_ttslice

@@ -10,3 +10,6 @@ def tensordot(ttslice1,ttslice2,axes):
     ret=[np.tensordot(t1,t2,maxes).transpose(tp) for t1,t2 in zip(ttslice1,ttslice2)]
     ret=[np.reshape(r,(r.shape[0]*r.shape[1],)+r.shape[2:-2]+(r.shape[-1]*r.shape[-2],)) for r in ret]
     return ret
+
+def einsum(stri,*args):
+    pass

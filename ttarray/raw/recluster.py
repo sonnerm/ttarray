@@ -12,7 +12,7 @@ def recluster(ttslice,cluster_new,decomposition=trivial_decomposition):
     ttcl=(1,)*len(cluster_new[0])
     for cl in cluster_new:
         try:
-            while not (all(x%y==0 for x,y in zip(ttcl,cl)) and any(x>y for x,y in zip(ttcl,cl))):
+            while any(x%y!=0 for x,y in zip(ttcl,cl)) or len(ttcur)==0:
                     ttcur.append(next(ttiter))
                     ttcl=tuple(x*y for x,y in zip(ttcur[-1].shape[1:-1],ttcl))
         except StopIteration:
@@ -30,4 +30,6 @@ def recluster(ttslice,cluster_new,decomposition=trivial_decomposition):
         else:
             ret.append(ttslice_to_dense(ttcur))
             ttcur=[]
+    for rest in ttiter:
+        ret[-1]=ret[-1]@np.squeeze(rest,axis=tuple(range(1,len(rest.shape)-1)))
     return ret
