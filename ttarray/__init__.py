@@ -8,3 +8,4 @@ from .core import array,slice,frombuffer,fromfunction,fromiter
 from .core import asarray,asslice,asanyarray,asanyslice
 
 from .core import add,multiply,matmul
+from .core import tensordot

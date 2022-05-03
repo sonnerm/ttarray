@@ -1,7 +1,17 @@
 import numpy as np
 from .dispatch import implement_function,implement_ufunc
-@implement_function
+from .base import TensorTrainBase
+from .slice import TensorTrainSlice
+from .array import TensorTrainArray
+from .reshape import recluster
+import ttarray.raw as raw
+@implement_function()
 def tensordot(x,y,axes=2,out=None):
+    if isinstance(axes,(int,np.integer)):
+        axes=(tuple(range(-axes,0)),tuple(range(0,axes)))
+    elif isinstance(axes[0],(int,np.integer)):
+        axes=((axes[0],),(axes[1],))
+    axes=(tuple(c if c>=0 else c+len(x.shape) for c in axes[0]),tuple(c if c>=0 else c+len(y.shape) for c in axes[1]))
     if not isinstance(x,TensorTrainBase) and not isinstance(y,TensorTrainBase):
         return NotImplemented #not my job then
     if not isinstance(x,TensorTrainBase):
@@ -19,7 +29,7 @@ def tensordot(x,y,axes=2,out=None):
     x=recluster(x,y.cluster,copy=True)
     ntt=raw.tensordot(x.asmatrices(),y.asmatrices(),axes)
     return x.__class__.frommatrices(ntt)
-@implement_function
+@implement_function()
 def dot(x,y,out=None):
     if not isinstance(x,TensorTrainBase) and isinstance(y,TensorTrainBase):
         return NotImplemented
@@ -27,7 +37,7 @@ def dot(x,y,out=None):
         return tensordot(x,y,axes=((0,),(0,)),out=out)
     else:
         raise ValueError("shapes are not consistent")
-@implement_function
+@implement_function()
 def vdot(x,y,out=None):
     if not isinstance(x,TensorTrainBase) and isinstance(y,TensorTrainBase):
         return NotImplemented
