@@ -52,9 +52,9 @@ def matmul(x,y):
     if not isinstance(x,TensorTrainBase) and isinstance(y,TensorTrainBase):
         return NotImplemented
     if len(x.shape)==1 and len(y.shape)==1:
-        return tensordot(x,y,axes=((0,),(0,)),out=out)
+        return tensordot(x,y,axes=((0,),(0,)))
     else:
-        raise ValueError("shapes are not consistent")
+        return tensordot(x,y,axes=((len(x.shape)-1,),(len(y.shape)-2,)))
 
 @implement_function
 def einsum(a,out=None):

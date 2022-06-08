@@ -91,10 +91,11 @@ def svd_truncate(ar,chi_max=None,cutoff=0.0,compute_uv=True,full_matrices=None,s
         chi_max=min(ar.shape)
     # if compute_uv:
     u,s,vh=svd(ar,full_matrices=False)
-    if (s>cutoff).all():
+    norm=np.sqrt(np.sum(s.conj()*s))
+    if (s/norm>cutoff).all():
         ind=chi_max
     else:
-        ind=min(chi_max,np.argmin(s>cutoff))
+        ind=min(chi_max,np.argmin(s/norm>cutoff))
     return u[:,:ind],s[:ind],vh[:ind,:]
     # else:
     #     s=svd(ar,compute_uv=False)
@@ -105,12 +106,12 @@ def svd_truncate(ar,chi_max=None,cutoff=0.0,compute_uv=True,full_matrices=None,s
     #     return s[:ind]
     # return svd(ar,full_matrices=False,compute_uv=compute_uv)
 
-def left_truncate_svd(ttslice,chi_max=None,cutoff=None,svd=la.svd):
+def left_truncate_svd(ttslice,chi_max=None,cutoff=0.0,svd=la.svd):
     def _svd(x,compute_uv=True,full_matrices=False):
         return svd_truncate(x,chi_max,cutoff,compute_uv,full_matrices,svd)
     return left_singular_values(ttslice,_svd)
 
-def right_truncate_svd(ttslice,chi_max=None,cutoff=None,svd=la.svd):
+def right_truncate_svd(ttslice,chi_max=None,cutoff=0.0,svd=la.svd):
     def _svd(x,compute_uv=True,full_matrices=False):
         return svd_truncate(x,chi_max,cutoff,compute_uv,full_matrices,svd)
     return right_singular_values(ttslice,_svd)

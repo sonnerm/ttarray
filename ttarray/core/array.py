@@ -36,6 +36,10 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
         if tts._data[0].shape[0]!=1 or tts._data[-1].shape[-1]!=1:
             raise ValueError("TensorTrainArrays cannot have a non-contracted boundary")
         self._tts=tts
+    def _check_consistency(self):
+        if self._tts.shape[0]!=1 or self._tts.shape[-1]!=1:
+            raise ValueError("TensorTrainArrays cannot have a non-contracted boundary")
+        self._tts._check_consistency()
     @property
     def M(self):
         return _TensorTrainArrayData(self._tts)
@@ -57,7 +61,10 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
     @property
     def center(self):
         return self._tts.center
-
+    def clearcenter(self):
+        self._tts.clearcenter()
+    def setcenter_unchecked(self,ncenter):
+        self._tts.setcenter_unchecked(ncenter)
     def __repr__(self):
         return "TensorTrainArray<dtype=%s, shape=%s, L=%s, cluster=%s, chi=%s>"%(self.dtype,self.shape,self.L,self.cluster,self.chi)
     def __array__(self,dtype=None):
@@ -119,8 +126,12 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
 
     def setmatrices_unchecked(self,dat):
         self._tts.setmatrices_unchecked(dat)
-    def canonicalize(self):
-        return self._tts.canonicalize()
+    def canonicalize(self,center=None,copy=False,qr=la.qr):
+        return self._tts.canonicalize(center,copy,qr)
+    def truncate(self,chi_max=None,cutoff=0.0,left=0,right=-1,qr=la.qr,svd=la.svd):
+        return self._tts.truncate(chi_max,cutoff,left,right,qr,svd)
+    def singular_values(self,left=0,right=-1,ro=False,svd=la.svd,qr=la.qr):
+        return self._tts.singular_values(left,right,svd,qr)
 
     def is_canonical(self):
         return self._tts.is_canonical()

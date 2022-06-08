@@ -84,8 +84,12 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         '''
             Sets the orthogonality center to ``center`` without checking if the
             TensorTrainSlice is really canonical with this orthogonality center.
-            This method is intended for cases where the canonical property is
-            ensured
+            This method is intended for cases where the (partial) canonical property
+            is ensured by conditions outside of this class.
+
+            See also:
+            is_canonical, canonicalize
+
         '''
         self._center=center
     def clearcenter(self):
@@ -181,6 +185,10 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
             ret=self.copy()
         else:
             ret=self
+        if center is None:
+            center=self.L-1
+        elif center<0:
+            center=self.L+center
         if self._center is None:
             raw.canonicalize(ret.asmatrices_unchecked(),center,qr=qr)
             ret._center=center
@@ -188,15 +196,16 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
             raw.shift_orthogonality_center(ret.asmatrices_unchecked(),self._center,center,qr=qr)
             ret._center=center
         return ret
-    def singular_values(self,copy=False,qr=la.qr,svd=la.svd):
-        # if copy:
-        #     ret=self.copy()
-        # else:
-        #     ret=self
-        # if ret._center is None:
-        #     ret.canonicalize(-1,qr=qr)
-        # return raw.singular_values(ret.asmatrices_unchecked(),center,svd=svd)
-        pass
+    def singular_values(self,left=0,right=-1,ro=False,qr=la.qr,svd=la.svd):
+        if ro:
+            ret=self.copy()
+        else:
+            ret=self
+        if right<0:
+            right=self.L+right
+        if ret._center is None:
+            ret.canonicalize(right,qr=qr)
+        return raw.singular_values(ret.asmatrices_unchecked()[left:right+1],ret.center-left,svd=svd)
 
     @classmethod
     def frommatrices(cls,matrices):
@@ -310,5 +319,14 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
             return self
         else:
             return self.__class__.frommatrices(raw.recluster(self.asmatrices(),newcluster))
+    def truncate(self,chi_max=None,cutoff=0.0,left=0,right=-1,qr=la.qr,svd=la.svd):
+        if right<0:
+            right+=self.L
+        self.canonicalize(right)
+        mats=self.asmatrices_unchecked()[left:right+1]
+        raw.left_truncate_svd(mats,chi_max,cutoff)
+        self.asmatrices_unchecked()[left:right+1]=mats
+        self._center=left
+        assert self.is_canonical(left)
     def copy(self):
         return self.__class__.frommatrices([x.copy() for x in self.asmatrices_unchecked()])
