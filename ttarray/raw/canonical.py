@@ -25,8 +25,12 @@ def is_left_canonical(ttslice,eps=1e-8):
 def canonicalize(ttslice,center,qr=la.qr):
     if center<0:
         center=len(ttslice)+center
-    left_canonicalize(ttslice[:center+1],qr)
-    right_canonicalize(ttslice[center:],qr)
+    lh=ttslice[:center+1]
+    left_canonicalize(lh,qr)
+    ttslice[:center+1]=lh
+    rh=ttslice[center:]
+    right_canonicalize(rh,qr)
+    ttslice[center:]=rh
 def shift_orthogonality_center(ttslice,oldcenter,newcenter,qr=la.qr):
     '''
         Shift the orthogonality center by performing qr decompositions step by step
