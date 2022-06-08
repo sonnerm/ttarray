@@ -214,6 +214,17 @@ def frombuffer(buffer, dtype=float, count=- 1, offset=0, cluster=None):
 def fromiter(iter, dtype, count=- 1, cluster=None):
     return array(np.fromiter(iter,dtype,count),dtype=dtype,cluster=cluster)
 
+def frommatrices(iter):
+    return TensorTrainArray.frommatrices(iter)
+
+def frommatrices_slice(iter):
+    return TensorTrainSlice.frommatrices(iter)
+
+def fromproduct(iter):
+    return TensorTrainArray.frommatrices((x[None,...,None for x in iter))
+
+def fromproduct_slice(iter):
+    return TensorTrainSlice.frommatrices((x[None,...,None for x in iter))
 
 @implement_function("fromfunction","array")
 def fromfunction(function, shape, dtype=float, cluster=None, **kwargs):
