@@ -221,10 +221,10 @@ def frommatrices_slice(iter):
     return TensorTrainSlice.frommatrices(iter)
 
 def fromproduct(iter):
-    return TensorTrainArray.frommatrices((x[None,...,None for x in iter))
+    return TensorTrainArray.frommatrices((x[None,...,None] for x in iter))
 
 def fromproduct_slice(iter):
-    return TensorTrainSlice.frommatrices((x[None,...,None for x in iter))
+    return TensorTrainSlice.frommatrices((x[None,...,None] for x in iter))
 
 @implement_function("fromfunction","array")
 def fromfunction(function, shape, dtype=float, cluster=None, **kwargs):
