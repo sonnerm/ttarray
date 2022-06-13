@@ -315,6 +315,7 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
                 return self.copy()
             return self
         if not copy:
+            self.clearcenter()
             self.setmatrices_unchecked(raw.recluster(self.asmatrices_unchecked(),newcluster))
             return self
         else:
@@ -326,7 +327,7 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         mats=self.asmatrices_unchecked()[left:right+1]
         raw.left_truncate_svd(mats,chi_max,cutoff)
         self.asmatrices_unchecked()[left:right+1]=mats
-        self._center=left
         assert self.is_canonical(left)
+        self._center=left
     def copy(self):
         return self.__class__.frommatrices([x.copy() for x in self.asmatrices_unchecked()])

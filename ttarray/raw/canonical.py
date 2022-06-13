@@ -1,21 +1,21 @@
 import numpy.linalg as la
 import numpy as np
-def is_canonical(ttslice,center,eps=1e-8):
+def is_canonical(ttslice,center,eps=1e-14):
     '''
         Checks whether ttslice is in canonical form with a specific orthogonality center
         and tolerance eps
     '''
     if center<0:
         center=len(ttslice)+center
-    return is_left_canonical(ttslice[:center],eps) and is_right_canonical(ttslice[center+1:],eps)
+    return is_left_canonical(ttslice[:center+1],eps) and is_right_canonical(ttslice[center:],eps)
 
-def is_right_canonical(ttslice,eps=1e-8):
+def is_right_canonical(ttslice,eps=1e-14):
     for m in ttslice[1:]:
         mm=m.reshape((m.shape[0],-1))
         if not np.allclose(mm@mm.T.conj(),np.eye(mm.shape[0],like=mm),atol=eps):
             return False
     return True
-def is_left_canonical(ttslice,eps=1e-8):
+def is_left_canonical(ttslice,eps=1e-14):
     for m in ttslice[:-1]:
         mm=m.reshape((-1,m.shape[-1]))
         if not np.allclose(mm.T.conj()@mm,np.eye(mm.shape[1],like=mm),atol=eps):

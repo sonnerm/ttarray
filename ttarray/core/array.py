@@ -133,5 +133,5 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
     def singular_values(self,left=0,right=-1,ro=False,svd=la.svd,qr=la.qr):
         return self._tts.singular_values(left,right,svd,qr)
 
-    def is_canonical(self):
-        return self._tts.is_canonical()
+    def is_canonical(self,center=None):
+        return self._tts.is_canonical(center)
