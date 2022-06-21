@@ -331,3 +331,5 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         self._center=left
     def copy(self):
         return self.__class__.frommatrices([x.copy() for x in self.asmatrices_unchecked()])
+    def conj(self):
+        return self.__class__.frommatrices([x.conj() for x in self.asmatrices_unchecked()])

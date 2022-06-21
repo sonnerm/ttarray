@@ -135,3 +135,5 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
 
     def is_canonical(self,center=None):
         return self._tts.is_canonical(center)
+    def conj(self):
+        return self.__class__.fromslice_unchecked(self._tts.conj())

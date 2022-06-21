@@ -67,3 +67,10 @@ def multiply(x,y):
     x=recluster(x,y.cluster,copy=True)
     ntt=raw.multiply_ttslice(x.asmatrices(),y.asmatrices())
     return x.__class__.frommatrices(ntt)
+
+@implement_ufunc("conjugate","__call__")
+def conjugate(x):
+    if not isinstance(x,TensorTrainBase):
+        return NotImplemented
+    return x.conj()
+conj=conjugate
