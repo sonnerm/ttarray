@@ -99,13 +99,16 @@ def test_truncate(seed_rng):
                 assert ss==pytest.approx(sc[:20])
 
             raw.left_canonicalize(ttar2)
-            sv=raw.left_truncate_svd(ttar2,chi_max=None,cutoff=0.2)
+            sv=raw.left_truncate_svd(ttar2,chi_max=None,cutoff=0.05)
             for ss,sc in zip(sv,svc):
-                assert ss==pytest.approx(sc[sc>0.2],rel=1e-1)
+                norm=np.sqrt(np.sum(sc**2))
+                assert ss==pytest.approx(sc[(sc/norm)>0.05],rel=1e-1)
             assert raw.is_right_canonical(ttar2)
             sv2=raw.right_singular_values(ttar2)
             for ss,sc in zip(sv,sv2):
-                assert ss==pytest.approx(sc[sc>0.2],rel=1e-1)
+                norm=np.sqrt(np.sum(sc**2))
+                assert ss==pytest.approx(sc[(sc/norm)>0.05],rel=1e-1)
             svc2=dense_singular_values(raw.ttslice_to_dense(ttar2),cluster)
             for ss,sc in zip(sv2,svc2):
-                assert ss==pytest.approx(sc[sc>0.2])
+                norm=np.sqrt(np.sum(sc**2))
+                assert ss==pytest.approx(sc[(sc/norm)>0.05])
