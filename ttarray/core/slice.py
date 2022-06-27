@@ -168,13 +168,13 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         if self._center is not None and (center is None or center==self._center):
             return True
         elif center is not None:
-            if raw.is_canonical(self.asmatrices_unchecked(),center):
+            if raw.is_canonical(self.tomatrices_unchecked(),center):
                 self._center=center
                 return True
             else:
                 return False
         else:
-            self._center=raw.find_orthogonality_center(self.asmatrices_unchecked())
+            self._center=raw.find_orthogonality_center(self.tomatrices_unchecked())
             return self._center is not None
 
     def canonicalize(self,center=None,copy=False,qr=la.qr):
@@ -190,10 +190,10 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         elif center<0:
             center=self.L+center
         if self._center is None:
-            raw.canonicalize(ret.asmatrices_unchecked(),center,qr=qr)
+            raw.canonicalize(ret.tomatrices_unchecked(),center,qr=qr)
             ret._center=center
         else:
-            raw.shift_orthogonality_center(ret.asmatrices_unchecked(),self._center,center,qr=qr)
+            raw.shift_orthogonality_center(ret.tomatrices_unchecked(),self._center,center,qr=qr)
             ret._center=center
         return ret
     def singular_values(self,left=0,right=-1,ro=False,qr=la.qr,svd=la.svd):
@@ -205,7 +205,7 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
             right=self.L+right
         if ret._center is None:
             ret.canonicalize(right,qr=qr)
-        return raw.singular_values(ret.asmatrices_unchecked()[left:right+1],ret.center-left,svd=svd)
+        return raw.singular_values(ret.tomatrices_unchecked()[left:right+1],ret.center-left,svd=svd)
 
     @classmethod
     def frommatrices(cls,matrices):
@@ -260,12 +260,12 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
             underlying data
         '''
         return raw.ttslice_to_dense(self._data)
-    def asmatrices(self):
+    def tomatrices(self):
         '''
             Returns a copy of the list of underlying matrices.
         '''
         return [x.copy() for x in self._data]
-    def asmatrices_unchecked(self):
+    def tomatrices_unchecked(self):
         '''
             Returns the list of matrices which make up the TensorTrainSlice.
             Doesn't copy, if invariants are violated that is your problem.
@@ -316,20 +316,20 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
             return self
         if not copy:
             self.clearcenter()
-            self.setmatrices_unchecked(raw.recluster(self.asmatrices_unchecked(),newcluster))
+            self.setmatrices_unchecked(raw.recluster(self.tomatrices_unchecked(),newcluster))
             return self
         else:
-            return self.__class__.frommatrices(raw.recluster(self.asmatrices(),newcluster))
+            return self.__class__.frommatrices(raw.recluster(self.tomatrices(),newcluster))
     def truncate(self,chi_max=None,cutoff=0.0,left=0,right=-1,qr=la.qr,svd=la.svd):
         if right<0:
             right+=self.L
         self.canonicalize(right)
-        mats=self.asmatrices_unchecked()[left:right+1]
+        mats=self.tomatrices_unchecked()[left:right+1]
         raw.left_truncate_svd(mats,chi_max,cutoff)
-        self.asmatrices_unchecked()[left:right+1]=mats
+        self.tomatrices_unchecked()[left:right+1]=mats
         assert self.is_canonical(left)
         self._center=left
     def copy(self):
-        return self.__class__.frommatrices([x.copy() for x in self.asmatrices_unchecked()])
+        return self.__class__.frommatrices([x.copy() for x in self.tomatrices_unchecked()])
     def conj(self):
-        return self.__class__.frommatrices([x.conj() for x in self.asmatrices_unchecked()])
+        return self.__class__.frommatrices([x.conj() for x in self.tomatrices_unchecked()])

@@ -84,16 +84,16 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
     def fromslice(cls,tts):
         return cls(tts.copy())
     @classmethod
-    def fromslice_unchecked(self,tts):
+    def fromslice_unchecked(cls,tts):
         return cls(tts)
-    def asslice(self):
+    def toslice(self):
         return self._tts.copy()
-    def asslice_unchecked(self):
+    def toslice_unchecked(self):
         return self._tts
-    def asmatrices(self):
-        return self._tts.asmatrices() #already does copying
-    def asmatrices_unchecked(self):
-        return self._tts.asmatrices_unchecked()
+    def tomatrices(self):
+        return self._tts.tomatrices() #already does copying
+    def tomatrices_unchecked(self):
+        return self._tts.tomatrices_unchecked()
     def __array_function__(self,func,types,args,kwargs):
         f=HANDLER_FUNCTION_ARRAY.get(func.__name__,None)
         if f is None:

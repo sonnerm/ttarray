@@ -170,7 +170,7 @@ def array(ar, dtype=None, cluster=None, copy=True,*,ndim=0):
         pass
     elif isinstance(ar,TensorTrainSlice):
         #just recast, clustering is then a bit weird, recluster afterwards
-        arm=ar.asmatrices()
+        arm=ar.tomatrices()
         if not copy:
             arm[0]=arm[0][None,...]
         else:

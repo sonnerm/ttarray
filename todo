@@ -29,7 +29,7 @@ Large shape + clusters for tests
     * may_share_memory, shares_memory
 * I/O
   * Implemented
-    * asmatrices, frommatrices, toarray, fromarray
+    * tomatrices, frommatrices, toarray, fromarray
   * Todo
     * define (hdf5 ?) format to store and retrieve TensorTrainArrays and TensorTrainSlices
     * interop with tenpy

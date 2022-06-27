@@ -27,7 +27,7 @@ def tensordot(x,y,axes=2,out=None):
     if isinstance(y,TensorTrainSlice):
         y=array(y)
     x=recluster(x,y.cluster,copy=True)
-    ntt=raw.tensordot(x.asmatrices(),y.asmatrices(),axes)
+    ntt=raw.tensordot(x.tomatrices(),y.tomatrices(),axes)
     return x.__class__.frommatrices(ntt)
 @implement_function()
 def dot(x,y,out=None):

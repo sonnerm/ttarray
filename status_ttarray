@@ -39,4 +39,4 @@ Finish this list ....
   * not implementing
     - byteswap
     - ctypes
-    - tolist #confusing with asmatrices, frommatrices
+    - tolist #confusing with tomatrices, frommatrices
