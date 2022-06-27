@@ -38,18 +38,18 @@ def add(x,y):
     if isinstance(y,TensorTrainSlice):
         y=array(y)
     x=recluster(x,y.cluster,copy=True)
-    ntt=raw.add_ttslice(x.asmatrices(),y.asmatrices())
+    ntt=raw.add_ttslice(x.tomatrices(),y.tomatrices())
     return x.__class__.frommatrices(ntt)
 @implement_ufunc("multiply","__call__")
 def multiply(x,y):
     if np.isscalar(x) and np.isscalar(y):
         return NotImplemented
     if np.isscalar(x):
-        mats=y.asmatrices()
+        mats=y.tomatrices()
         mats[0]*=x
         return y.__class__.frommatrices(mats)
     if np.isscalar(y):
-        mats=x.asmatrices()
+        mats=x.tomatrices()
         mats[0]*=y
         return x.__class__.frommatrices(mats)
     if not isinstance(x,TensorTrainBase) and not isinstance(y,TensorTrainBase):
@@ -65,7 +65,7 @@ def multiply(x,y):
     if isinstance(y,TensorTrainSlice) and isinstance(x,TensorTrainArray):
         y=array(y)
     x=recluster(x,y.cluster,copy=True)
-    ntt=raw.multiply_ttslice(x.asmatrices(),y.asmatrices())
+    ntt=raw.multiply_ttslice(x.tomatrices(),y.tomatrices())
     return x.__class__.frommatrices(ntt)
 
 @implement_ufunc("conjugate","__call__")

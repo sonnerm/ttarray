@@ -1,11 +1,15 @@
+* Done
+    - add
+    - multiply
+    - conj, conjugate
 * Todo
   * easy ufuncs
-    - add, subtract
+    , subtract
     - multiply, square
     - degrees, radians
     - deg2rad, rad2deg whatever the difference is
     - power, float_power (at least integer)
-    - conj, conjugate, real, imag
+    - real, imag
 
   * maybe ufuncs
     - divide, true_divide, reciprocal
