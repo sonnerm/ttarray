@@ -310,6 +310,16 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
     def recluster(self,newcluster=None,copy=False):
         if newcluster is None:
             newcluster = raw.find_balanced_cluster(self.shape)
+        else:
+            rank=len(self.shape)-2
+            for n in newcluster:
+                if len(n)!=rank:
+                    raise ValueError("cluster does not have rank %i"%rank)
+            tsh=[_product(c[d] for c in newcluster) for d in range(rank)]
+            if tsh!=self.shape[1:-1]:
+                raise ValueError("cluster %s not compatible with shape %s"%(newcluster,self.shape))
+
+
         if newcluster==self.cluster:
             if copy:
                 return self.copy()
