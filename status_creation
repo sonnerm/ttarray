@@ -7,10 +7,11 @@
   - fromfunction (for now, later maybe ttcross)
   - arange,linspace,logspace,geomspace
   - copy
+  - diag (k=0 only),eye,identity
   - asfarray (doesn't work yet since array is not complete)
 * Todo:
   * diagonal
-    - eye, identity, diag, diagflat
+    - diagflat
   * Decomposition from dense (for now at least)
     - tri
     - tril,triu

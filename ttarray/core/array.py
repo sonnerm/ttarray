@@ -108,8 +108,8 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
     def transpose(self,*axes):
         r=len(self.shape)
         axes=_normalize_axes(axes)
-        naxes=[0]+axes+[r]
-        return self.__class__.frommatrices([x.transpose(naxes) for x in a.M])
+        naxes=[0]+[a+1 for a in axes]+[r]
+        return self.__class__.frommatrices_unchecked([x.transpose(naxes) for x in a.M])
     def recluster(self,newcluster=None,copy=False):
         tts=self._tts.recluster(newcluster,copy)
         if not copy:

@@ -159,7 +159,16 @@ def identity(n,dtype=None,cluster=None):
     return eye(N=n,dtype=dtype,cluster=cluster)
 @implement_function("diag","array")
 def diag(v,k=0):
-    pass
+    if k!=0:
+        raise NotImplementedError("off diagonal not yet supported")
+    if not isinstance(v,TensorTrainArray):
+        return NotImplemented
+    if len(v.shape)==1:
+        return frommatrices_unchecked(np.einsum("abd->abbd",x) for x in v.tomatrices_unchecked())
+    if len(v.shape)==2:
+        return frommatrices_unchecked(np.einsum("abbd->abd",x) for x in v.tomatrices_unchecked())
+    else:
+        raise ValueError("Input must be either 1- or 2-d.")
 
 
 

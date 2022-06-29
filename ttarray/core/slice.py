@@ -306,7 +306,7 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         if axes[0]!=0 and axes[-1]!=r:
             raise NotImplementedError("transposing of the boundaries of a TensorTrainSlice is not supported yet")
         else:
-            return self.__class__.frommatrices([x.transpose(axes) for x in a.M])
+            return self.__class__.frommatrices_unchecked([x.transpose(axes) for x in a.M])
     def recluster(self,newcluster=None,copy=False):
         if newcluster is None:
             newcluster = raw.find_balanced_cluster(self.shape)

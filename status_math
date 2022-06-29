@@ -5,7 +5,7 @@
 * Todo
   * easy ufuncs
     , subtract
-    - multiply, square
+    - square
     - degrees, radians
     - deg2rad, rad2deg whatever the difference is
     - power, float_power (at least integer)
