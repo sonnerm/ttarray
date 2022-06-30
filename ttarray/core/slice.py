@@ -315,7 +315,7 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
             for n in newcluster:
                 if len(n)!=rank:
                     raise ValueError("cluster does not have rank %i"%rank)
-            tsh=[_product(c[d] for c in newcluster) for d in range(rank)]
+            tsh=tuple([_product(c[d] for c in newcluster) for d in range(rank)])
             if tsh!=self.shape[1:-1]:
                 raise ValueError("cluster %s not compatible with shape %s"%(newcluster,self.shape))
 
