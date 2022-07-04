@@ -61,6 +61,9 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
     @property
     def center(self):
         return self._tts.center
+    @property
+    def T(self):
+        return self.transpose()
     def clearcenter(self):
         self._tts.clearcenter()
     def setcenter_unchecked(self,ncenter):
@@ -107,11 +110,11 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
 
     def transpose(self,*axes):
         r=len(self.shape)
-        axes=_normalize_axes(axes)
-        naxes=[0]+[a+1 for a in axes]+[r]
-        return self.__class__.frommatrices_unchecked([x.transpose(naxes) for x in a.M])
-    def recluster(self,newcluster=None,copy=False):
-        tts=self._tts.recluster(newcluster,copy)
+        axes=_normalize_axes(r,axes)
+        naxes=[0]+[a+1 for a in axes]+[r+1]
+        return self.__class__.frommatrices_unchecked([x.transpose(naxes) for x in self.M])
+    def recluster(self,newcluster=None,axes=None,copy=False):
+        tts=self._tts.recluster(newcluster,axes=axes,copy=copy)
         if not copy:
             return self
         else:

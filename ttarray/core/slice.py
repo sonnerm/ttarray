@@ -15,10 +15,10 @@ def _flatten_ttslice(seq):
 def _product(seq):
     return functools.reduce(lambda a,b:a*b,seq,1) #can't use np.prod since might overflow
 
-def _normalize_axes(axes):
-    if axes==None:
+def _normalize_axes(r,axes):
+    if axes==():
         axes=list(range(r))[::-1]
-    axes=[a if a>0 else L+a for a in axes]
+    axes=[a if a>=0 else r+a for a in axes]
     return axes
 class _TensorTrainSliceData:
     def __init__(self,tts):
@@ -307,17 +307,28 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
             raise NotImplementedError("transposing of the boundaries of a TensorTrainSlice is not supported yet")
         else:
             return self.__class__.frommatrices_unchecked([x.transpose(axes) for x in a.M])
-    def recluster(self,newcluster=None,copy=False):
+    def recluster(self,newcluster=None,axes=None,copy=False):
         if newcluster is None:
             newcluster = raw.find_balanced_cluster(self.shape)
-        else:
-            rank=len(self.shape)-2
-            for n in newcluster:
-                if len(n)!=rank:
-                    raise ValueError("cluster does not have rank %i"%rank)
-            tsh=tuple([_product(c[d] for c in newcluster) for d in range(rank)])
-            if tsh!=self.shape[1:-1]:
-                raise ValueError("cluster %s not compatible with shape %s"%(newcluster,self.shape))
+        if axes is not None:
+            oaxes=[i for i in range(1,len(self.shape)-1) if i not in axes]
+            ocluster=raw.find_balanced_cluster(tuple(self.shape[s] for s in oaxes),len(newcluster))
+            ncluster=[]
+            for nc,oc in zip(newcluster,ocluster):
+                ncc=[0]*(len(self.shape)-2)
+                for i,c in zip(oaxes,oc):
+                    ncc[i-1]=c
+                for i,c in zip(axes,nc):
+                    ncc[i-1]=c
+                ncluster.append(tuple(ncc))
+            newcluster=ncluster
+        rank=len(self.shape)-2
+        for n in newcluster:
+            if len(n)!=rank:
+                raise ValueError("cluster does not have rank %i"%rank)
+        tsh=tuple([_product(c[d] for c in newcluster) for d in range(rank)])
+        if tsh!=self.shape[1:-1]:
+            raise ValueError("cluster %s not compatible with shape %s"%(newcluster,self.shape))
 
 
         if newcluster==self.cluster:

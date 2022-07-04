@@ -26,7 +26,8 @@ def tensordot(x,y,axes=2,out=None):
         x=array(x)
     if isinstance(y,TensorTrainSlice):
         y=array(y)
-    x=recluster(x,y.cluster,copy=True)
+    yc=tuple(tuple(ycc[i] for i in axes[1]) for ycc in y.cluster)
+    x=recluster(x,yc,axes=axes[0],copy=True)
     ntt=raw.tensordot(x.tomatrices(),y.tomatrices(),axes)
     return x.__class__.frommatrices(ntt)
 @implement_function()

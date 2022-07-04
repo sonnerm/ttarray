@@ -5,7 +5,7 @@ def trivial_decomposition(M):
         return np.eye(M.shape[0],dtype=M.dtype,like=M),M
     else:
         return M,np.eye(M.shape[1],dtype=M.dtype,like=M)
-def find_balanced_cluster(shape):
+def find_balanced_cluster(shape,L=None):
     if len(shape)==0:
         return ((),)
     cluster=[]
@@ -29,10 +29,16 @@ def find_balanced_cluster(shape):
                 clc.append(s)
                 break
         cluster.append(clc[::-1])
-    maxlen=max(len(c) for c in cluster)
-    for c in cluster:
-        if len(c)<maxlen:
-            c.extend([1]*(maxlen-len(c)))
+    if L is None:
+        L=max(len(c) for c in cluster)
+    for i,c in enumerate(cluster):
+        if len(c)<L:
+            c.extend([1]*(L-len(c)))
+        elif len(c)>L:
+            cl=c[:L]
+            for ii,cc in enumerate(c[L:]):
+                cl[ii%L]*=cc
+            cluster[i]=cl
     return tuple(zip(*cluster))
 def _product(seq):
     return functools.reduce(lambda x,y:x*y,seq,1) # python unbounded ints ftw!
