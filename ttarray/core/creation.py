@@ -176,7 +176,12 @@ def diag(v,k=0):
 def array(ar, dtype=None, cluster=None, copy=True,*,ndim=0):
     if isinstance(ar,TensorTrainArray):
         #copy if necessary, recluster if necessary
-        pass
+        if cluster is not None and cluster!=ar.cluster:
+            return ar.recluster(cluster,copy=True)
+        elif copy:
+            return ar.copy()
+        else:
+            return ar
     elif isinstance(ar,TensorTrainSlice):
         #just recast, clustering is then a bit weird, recluster afterwards
         arm=ar.tomatrices()
