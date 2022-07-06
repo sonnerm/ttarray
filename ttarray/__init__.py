@@ -12,5 +12,6 @@ from .core import diag,eye,identity
 from .core import add,multiply,matmul
 from .core import conj,conjugate
 from .core import tensordot
+from .core import trace
 
 from .core import savehdf5,loadhdf5
