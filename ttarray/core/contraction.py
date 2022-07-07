@@ -54,18 +54,35 @@ def matmul(x,y):
         return tensordot(x,y,axes=((1,),(0,)))
     else:
         raise NotImplementedError("shapes other then 1-D and 2-D are not yet supported")
+@implement_function
+def multi_dot(arrays,*,out=None):
+    if out is not None:
+        raise NotImplementedError("out is not yet supported")
+    narrays=[]
+    cl=None
+    for a in arrays[::-1]:
+        a=array(a)
+        if cl==-1:
+            raise ValueError("Only the first and last array can be 1-d!")
+        if cl is not None and len(a.shape)==2:
+            a.recluster(a,cl,axes=(1,),copy=False)
+        elif cl is not None and len(a.shape)==1:
+            a.recluster(a,cl,axes=(0,),copy=False)
+            cl=-1
+        elif len(a.shape)!=1 and len(a.shape)!=2:
+            raise ValueError("All arrays must be 1-d or 2-d")
+        cl=[(c[0],) for c in a.cluster]
+        narrays.append(a)
+    return frommatrices(raw.multi_dot([a.tomatrices_unchecked() for a in narrays[::-1]]))
+
+
 # @implement_function
-# def multi_dot():
-#     pass
-# @implement_function
-# def einsum(a,out=None):
-#     if not isinstance(x,TensorTrainBase) and isinstance(y,TensorTrainBase):
-#         return NotImplemented
-#     if len(x.shape)==1 and len(y.shape)==1:
-#         return tensordot(x.conj(),y,axes=((0,),(0,)),out=out)
-#     else:
-#         raise ValueError("shapes are not consistent")
-#
+# def einsum(subscripts, *operands, out=None, dtype=None, casting='safe', optimize=False):
+#     if out is not None:
+#         raise NotImplementedError("out is not yet supported")
+#     noperands=[]
+#     cld={}
+
 @implement_function()
 def trace(a,offset=0, axis1=0,axis2=1,dtype=None,out=None):
     if offset!=0:
