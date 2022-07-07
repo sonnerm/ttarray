@@ -3,7 +3,7 @@ Roadmap
 Immediate Goals:
 ----------------
 * Provide a *mostly* complete replication of the ``numpy`` API.
-* Use global configurations to determine behavior
+* Use object-local configurations to determine behavior
 * Implement a larger set of algorithms like DMRG, ttcross, ...
 
 Far Goals:
