@@ -23,6 +23,8 @@ def _normalize_axes(r,axes):
 def _check_cluster_axes(c1,c2,axes):
     c1=np.array(c1)
     c2=np.array(c2)
+    if c1.shape!=c2.shape:
+        return False
     return (c1[:,axes]==c2).all()
 class _TensorTrainSliceData:
     def __init__(self,tts):
