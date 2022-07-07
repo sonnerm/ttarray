@@ -54,7 +54,7 @@ def matmul(x,y):
         return tensordot(x,y,axes=((1,),(0,)))
     else:
         raise NotImplementedError("shapes other then 1-D and 2-D are not yet supported")
-@implement_function
+@implement_function()
 def multi_dot(arrays,*,out=None):
     if out is not None:
         raise NotImplementedError("out is not yet supported")
@@ -74,7 +74,13 @@ def multi_dot(arrays,*,out=None):
         cl=[(c[0],) for c in a.cluster]
         narrays.append(a)
     return frommatrices(raw.multi_dot([a.tomatrices_unchecked() for a in narrays[::-1]]))
-
+@implement_function()
+def inner(a,b,/):
+    a=asarray(a)
+    b=asarray(b)
+    if len(a.shape)==0 or len(b.shape)==0:
+        return a*b
+    return tensordot(a,b,axes=((-1,),(-1,)))
 
 # @implement_function
 # def einsum(subscripts, *operands, out=None, dtype=None, casting='safe', optimize=False):
