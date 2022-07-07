@@ -20,12 +20,16 @@ def _normalize_axes(r,axes):
         axes=list(range(r))[::-1]
     axes=[a if a>=0 else r+a for a in axes]
     return axes
+def _check_cluster_axes(c1,c2,axes):
+    c1=np.array(c1)
+    c2=np.array(c2)
+    return (c1[:,axes]==c2).all()
 class _TensorTrainSliceData:
     def __init__(self,tts):
         self._tts=tts
     def __getitem__(self,ind):
         if isinstance(ind,slice):
-            if ind.step==1:
+            if ind.step==1 or ind.step==None:
                 return self._tts.__class__(self._tts._data[ind])
             else:
                 raise IndexError("Slicing with a step not equal to one not supported for TensorTrains")
@@ -37,7 +41,7 @@ class _TensorTrainSliceData:
     def __setitem__(self,ind,it):
         it=_flatten_ttslice(it)
         if isinstance(ind,slice):
-            if ind.step==1:
+            if ind.step==1 or ind.step==None:
                 self._tts._data[ind]=it
             else:
                 raise IndexError("Slicing with a step not equal to one not supported for TensorTrains")
@@ -311,6 +315,10 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         if newcluster is None:
             newcluster = raw.find_balanced_cluster(self.shape)
         if axes is not None:
+            if _check_cluster_axes(self.cluster,newcluster,axes):
+                if copy:
+                    return self.copy()
+                return self
             oaxes=[i for i in range(1,len(self.shape)-1) if i not in axes]
             ocluster=raw.find_balanced_cluster(tuple(self.shape[s] for s in oaxes),len(newcluster))
             ncluster=[]
@@ -322,6 +330,12 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
                     ncc[i-1]=c
                 ncluster.append(tuple(ncc))
             newcluster=ncluster
+        else:
+            if newcluster==self.cluster:
+                if copy:
+                    return self.copy()
+                return self
+
         rank=len(self.shape)-2
         for n in newcluster:
             if len(n)!=rank:
@@ -331,10 +345,6 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
             raise ValueError("cluster %s not compatible with shape %s"%(newcluster,self.shape))
 
 
-        if newcluster==self.cluster:
-            if copy:
-                return self.copy()
-            return self
         if not copy:
             self.clearcenter()
             self.setmatrices_unchecked(raw.recluster(self.tomatrices_unchecked(),newcluster))
