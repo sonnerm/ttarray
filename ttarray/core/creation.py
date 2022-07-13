@@ -198,11 +198,15 @@ def array(ar, dtype=None, cluster=None, copy=True,*,ndim=0):
 @implement_function("array","slice")
 def slice(ar, dtype=None, cluster=None, copy=True,*,ndim=0):
     if isinstance(ar,TensorTrainSlice):
-        #copy if necessary
-        pass
+        if cluster is not None and cluster!=ar.cluster:
+            return ar.recluster(cluster,copy=True)
+        elif copy:
+            return ar.copy()
+        else:
+            return ar
     elif isinstance(ar,TensorTrainArray):
         #recluster then recast
-        pass
+        raise NotImplementedError("Conversion TensorTrainArray to slice not yet implemented")
     else:
         return TensorTrainSlice.fromdense(ar,dtype,cluster)
 @implement_function("asarray","array")
