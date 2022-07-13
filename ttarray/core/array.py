@@ -132,7 +132,7 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
     def setmatrices_unchecked(self,dat):
         self._tts.setmatrices_unchecked(dat)
     def canonicalize(self,center=None,copy=False,qr=la.qr):
-        return self._tts.canonicalize(center,copy,qr)
+        return self.__class__.fromslice_unchecked(self._tts.canonicalize(center,copy,qr))
     def truncate(self,chi_max=None,cutoff=0.0,left=0,right=-1,qr=la.qr,svd=la.svd):
         return self._tts.truncate(chi_max,cutoff,left,right,qr,svd)
     def singular_values(self,left=0,right=-1,ro=False,svd=la.svd,qr=la.qr):
