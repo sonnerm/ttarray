@@ -114,6 +114,8 @@ class TensorTrainArray(TensorTrainBase,NDArrayOperatorsMixin):
         naxes=[0]+[a+1 for a in axes]+[r+1]
         return self.__class__.frommatrices_unchecked([x.transpose(naxes) for x in self.M])
     def recluster(self,newcluster=None,axes=None,copy=False):
+        if axes is not None:
+            axes=tuple(a+1 for a in axes)
         tts=self._tts.recluster(newcluster,axes=axes,copy=copy)
         if not copy:
             return self
