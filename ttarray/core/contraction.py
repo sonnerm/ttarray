@@ -23,6 +23,9 @@ def tensordot(x,y,axes=2,out=None):
     if out is not None:
         raise NotImplementedError("out is not yet supported")
     axes=_format_axes(axes,len(x.shape),len(y.shape))
+    for a1,a2 in zip(axes[0],axes[1]):
+        if x.shape[a1]!=y.shape[a2]:
+            raise ValueError("Arrays have incompatible dimensions x.shape[%i]=%i and y.shape[%i]=%i"%(a1,x.shape[a1],a2,y.shape[a2]))
     y=asarray(y)
     x=asarray(x)
     yc=tuple(tuple(ycc[i] for i in axes[1]) for ycc in y.cluster)
