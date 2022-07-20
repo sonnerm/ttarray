@@ -25,7 +25,7 @@ def _check_cluster_axes(c1,c2,axes):
     c2=np.array(c2)
     if c1.shape!=c2.shape:
         return False
-    return (c1[:,axes]==c2).all()
+    return (c1[:,np.array(axes)-1]==c2).all()
 class _TensorTrainSliceData:
     def __init__(self,tts):
         self._tts=tts
@@ -317,7 +317,11 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         if newcluster is None:
             newcluster = raw.find_balanced_cluster(self.shape)
         if axes is not None:
-            if _check_cluster_axes(self.cluster,newcluster,axes):
+            if len(axes)==0:
+                pass
+            elif max(axes)>=len(self.shape)-1:
+                raise ValueError("Axis %i out of bounds for TensorTrainSlice with %i dimensions"%(max(axes),len(self.shape)))
+            elif _check_cluster_axes(self.cluster,newcluster,axes):
                 if copy:
                     return self.copy()
                 return self
