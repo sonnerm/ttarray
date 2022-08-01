@@ -5,7 +5,7 @@ setup(
     name="ttarray",
     packages=find_packages(),
     install_requires=["numpy>=1.19.0"],
-    version="0.0.1",
+    version="0.0.2",
     url="https://github.com/sonnerm/ttarray",
     author="Michael Sonner",
     author_email="sonnerm@gmail.com",
