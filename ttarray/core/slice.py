@@ -123,11 +123,15 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
             tensor trains can represent very high-dimensional arrays, the
             dimensions do not necessarily fit in a 64 bit integer!
         '''
-        rank=len(self._data[0].shape)
+        rank=self.rank
         shape=[self._data[0].shape[0]]
         shape.extend([_product(c[d] for c in self.cluster) for d in range(rank-2)])
         shape.append(self._data[-1].shape[-1])
         return tuple(shape)
+    @property
+    def rank(self):
+        return len(self._data[0].shape)
+
     @property
     def cluster(self):
         ''' tuple(tuple(int)): the external dimensions of each tensor in the TensorTrainSlice. '''
@@ -307,29 +311,30 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
             return NotImplemented
         return f(*args,**kwargs)
     def transpose(self,*axes):
-        r=len(self.shape)
+        r=self.rank
         axes=_normalize_axes(axes)
         if axes[0]!=0 and axes[-1]!=r:
             raise NotImplementedError("transposing of the boundaries of a TensorTrainSlice is not supported yet")
         else:
             return self.__class__.frommatrices_unchecked([x.transpose(axes) for x in a.M])
     def recluster(self,newcluster=None,axes=None,copy=False):
+        shape=self.shape
         if newcluster is None:
-            newcluster = raw.find_balanced_cluster(self.shape)
+            newcluster = raw.find_balanced_cluster(shape)
         if axes is not None:
             if len(axes)==0:
                 pass
-            elif max(axes)>=len(self.shape)-1:
-                raise ValueError("Axis %i out of bounds for TensorTrainSlice with %i dimensions"%(max(axes),len(self.shape)))
+            elif max(axes)>=self.rank-1:
+                raise ValueError("Axis %i out of bounds for TensorTrainSlice with %i dimensions"%(max(axes),self.rank))
             elif _check_cluster_axes(self.cluster,newcluster,axes):
                 if copy:
                     return self.copy()
                 return self
-            oaxes=[i for i in range(1,len(self.shape)-1) if i not in axes]
-            ocluster=raw.find_balanced_cluster(tuple(self.shape[s] for s in oaxes),len(newcluster))
+            oaxes=[i for i in range(1,self.rank-1) if i not in axes]
+            ocluster=raw.find_balanced_cluster(tuple(shape[s] for s in oaxes),len(newcluster))
             ncluster=[]
             for nc,oc in zip(newcluster,ocluster):
-                ncc=[0]*(len(self.shape)-2)
+                ncc=[0]*(self.rank-2)
                 for i,c in zip(oaxes,oc):
                     ncc[i-1]=c
                 for i,c in zip(axes,nc):
@@ -342,13 +347,12 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
                     return self.copy()
                 return self
 
-        rank=len(self.shape)-2
         for n in newcluster:
-            if len(n)!=rank:
-                raise ValueError("cluster does not have rank %i"%rank)
-        tsh=tuple([_product(c[d] for c in newcluster) for d in range(rank)])
-        if tsh!=self.shape[1:-1]:
-            raise ValueError("cluster %s not compatible with shape %s"%(newcluster,self.shape))
+            if len(n)!=self.rank-2:
+                raise ValueError("cluster does not have rank %i"%self.rank-2)
+        tsh=tuple([_product(c[d] for c in newcluster) for d in range(self.rank-2)])
+        if tsh!=shape[1:-1]:
+            raise ValueError("cluster %s not compatible with shape %s"%(newcluster,shape))
 
 
         if not copy:
