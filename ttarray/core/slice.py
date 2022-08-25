@@ -364,7 +364,11 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         mats=self.tomatrices_unchecked()[left:right+1]
         raw.left_truncate_svd(mats,chi_max,cutoff)
         self.tomatrices_unchecked()[left:right+1]=mats
-        assert self.is_canonical(left)
+        if not self.is_canonical(left):
+            import warnings
+            warnings.warn("truncation violated canonical form, recanonicalizing")
+            self.clearcenter()
+            self.canonicalize(left)
         self._center=left
     def copy(self):
         return self.__class__.frommatrices([x.copy() for x in self.tomatrices_unchecked()])
