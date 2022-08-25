@@ -1,13 +1,25 @@
 import numpy as np
-import numpy.linalg as la
-def singular_values(ttslice,center,svd=la.svd):
+import scipy.linalg as la
+def svd_stable(a):
+    try:
+        u,s,vh=la.svd(a,full_matrices=False,compute_uv=True,lapack_driver="gesdd")
+        if not np.allclose((u*s)@vh,a):
+            import warnings
+            warnings.warn("gesdd gives incorrect results; falling back to gesvd")
+            return la.svd(a,full_matrices=False,compute_uv=True,lapack_driver="gesvd")
+        return u,s,vh    
+    except la.LinalgError:
+        import warnings
+        warnings.warn("gesdd did not converge; falling back to gesvd")
+        return la.svd(a,full_matrices=False,compute_uv=True,lapack_driver="gesvd")
+def singular_values(ttslice,center,svd=svd_stable):
     '''
         Assume ttslice is canonical and extract the singular values
     '''
     if center<0:
         center=len(ttslice)+center
     return left_singular_values(ttslice[:center+1],svd,False)+right_singular_values(ttslice[center:],svd,False)
-def left_singular_values(ttslice,svd=la.svd,inplace=True):
+def left_singular_values(ttslice,svd=svd_stable,inplace=True):
     '''
         Assume that ttslice is in left-canonical form, extract singular values
     '''
@@ -15,11 +27,10 @@ def left_singular_values(ttslice,svd=la.svd,inplace=True):
         return []
     cshape=ttslice[-1].shape
     car=ttslice[-1].reshape((-1,cshape[-1]))
-    # svs=[svd(car,compute_uv=False)]
     svs=[]
     car=car.reshape((cshape[0],-1))
     for i in range(len(ttslice)-2,-1,-1):
-        u,s,vh=svd(car,full_matrices=False)
+        u,s,vh=svd(car)
         car=ttslice[i].reshape((-1,ttslice[i].shape[-1]))@(s[None,:]*u)
         car=car.reshape((ttslice[i].shape[0],-1))
         if inplace:
@@ -28,11 +39,10 @@ def left_singular_values(ttslice,svd=la.svd,inplace=True):
         svs.append(s)
     if inplace:
         ttslice[0]=car.reshape(cshape)
-    # svs.append(svd(car.reshape((ttslice[0].shape[0],-1)),compute_uv=False))
     return svs[::-1]
 
 
-def right_singular_values(ttslice,svd=la.svd,inplace=True):
+def right_singular_values(ttslice,svd=svd_stable,inplace=True):
     '''
         Assume that ttslice is in right-canonical form, extract singular values
     '''
@@ -40,11 +50,10 @@ def right_singular_values(ttslice,svd=la.svd,inplace=True):
         return []
     cshape=ttslice[0].shape
     car=ttslice[0].reshape((cshape[0],-1))
-    # svs=[svd(car,compute_uv=False)]
     svs=[]
     car=car.reshape((-1,cshape[-1]))
     for i in range(1,len(ttslice)):
-        u,s,vh=svd(car,full_matrices=False)
+        u,s,vh=svd(car)
         car=(s[:,None]*vh)@ttslice[i].reshape((ttslice[i].shape[0],-1))
         car=car.reshape((-1,ttslice[i].shape[-1]))
         if inplace:
@@ -53,7 +62,6 @@ def right_singular_values(ttslice,svd=la.svd,inplace=True):
         svs.append(s)
     if inplace:
         ttslice[-1]=car.reshape(cshape)
-    # svs.append(svd(car.reshape((-1,ttslice[-1].shape[-1])),compute_uv=False))
     return svs
 
 def shift_orthogonality_center_with_singular_values(ttslice,oldcenter,newcenter,svs):
@@ -86,32 +94,23 @@ def shift_orthogonality_center_with_singular_values(ttslice,oldcenter,newcenter,
             ttslice[o+1]=svs[o][tuple(sh)]*ttslice[o+1]
     else:
         pass #already correct
-def svd_truncate(ar,chi_max=None,cutoff=0.0,compute_uv=True,full_matrices=None,svd=la.svd):
+def svd_truncate(ar,chi_max=None,cutoff=0.0,svd=svd_stable):
     if chi_max is None:
         chi_max=min(ar.shape)
-    # if compute_uv:
-    u,s,vh=svd(ar,full_matrices=False)
+    u,s,vh=svd(ar)
     norm=np.sqrt(np.sum(s.conj()*s))
     if (s/norm>cutoff).all():
         ind=chi_max
     else:
         ind=min(chi_max,np.argmin(s/norm>cutoff))
     return u[:,:ind],s[:ind],vh[:ind,:]
-    # else:
-    #     s=svd(ar,compute_uv=False)
-    #     if (s>cutoff).all():
-    #         ind=chi_max
-    #     else:
-    #         ind=min(chi_max,np.argmin(s>cutoff))
-    #     return s[:ind]
-    # return svd(ar,full_matrices=False,compute_uv=compute_uv)
 
-def left_truncate_svd(ttslice,chi_max=None,cutoff=0.0,svd=la.svd):
-    def _svd(x,compute_uv=True,full_matrices=False):
-        return svd_truncate(x,chi_max,cutoff,compute_uv,full_matrices,svd)
+def left_truncate_svd(ttslice,chi_max=None,cutoff=0.0,svd=svd_stable):
+    def _svd(x):
+        return svd_truncate(x,chi_max,cutoff,svd)
     return left_singular_values(ttslice,_svd)
 
-def right_truncate_svd(ttslice,chi_max=None,cutoff=0.0,svd=la.svd):
-    def _svd(x,compute_uv=True,full_matrices=False):
-        return svd_truncate(x,chi_max,cutoff,compute_uv,full_matrices,svd)
+def right_truncate_svd(ttslice,chi_max=None,cutoff=0.0,svd=svd_stable):
+    def _svd(x):
+        return svd_truncate(x,chi_max,cutoff,svd)
     return right_singular_values(ttslice,_svd)
