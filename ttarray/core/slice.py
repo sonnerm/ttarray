@@ -318,10 +318,10 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         else:
             return self.__class__.frommatrices_unchecked([x.transpose(axes) for x in a.M])
     def recluster(self,newcluster=None,axes=None,copy=False):
-        shape=self.shape
         if newcluster is None:
+            shape=self.shape
             newcluster = raw.find_balanced_cluster(shape)
-        if axes is not None:
+        elif axes is not None:
             if len(axes)==0:
                 pass
             elif max(axes)>=self.rank-1:
@@ -331,6 +331,7 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
                     return self.copy()
                 return self
             oaxes=[i for i in range(1,self.rank-1) if i not in axes]
+            shape=self.shape
             ocluster=raw.find_balanced_cluster(tuple(shape[s] for s in oaxes),len(newcluster))
             ncluster=[]
             for nc,oc in zip(newcluster,ocluster):
@@ -346,7 +347,7 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
                 if copy:
                     return self.copy()
                 return self
-
+            shape=self.shape
         for n in newcluster:
             if len(n)!=self.rank-2:
                 raise ValueError("cluster does not have rank %i"%self.rank-2)
