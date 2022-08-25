@@ -364,7 +364,7 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         mats=self.tomatrices_unchecked()[left:right+1]
         raw.left_truncate_svd(mats,chi_max,cutoff)
         self.tomatrices_unchecked()[left:right+1]=mats
-        if not self.is_canonical(left):
+        if not raw.is_canonical(mats,0):
             import warnings
             warnings.warn("truncation violated canonical form, recanonicalizing")
             self.clearcenter()
