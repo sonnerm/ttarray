@@ -7,8 +7,8 @@ def svd_stable(a):
             import warnings
             warnings.warn("gesdd gives incorrect results; falling back to gesvd")
             return la.svd(a,full_matrices=False,compute_uv=True,lapack_driver="gesvd")
-        return u,s,vh    
-    except la.LinalgError:
+        return u,s,vh
+    except la.LinAlgError:
         import warnings
         warnings.warn("gesdd did not converge; falling back to gesvd")
         return la.svd(a,full_matrices=False,compute_uv=True,lapack_driver="gesvd")
