@@ -1,6 +1,6 @@
 import numpy as np
 import ttarray.raw as raw
-from .creation import full,array
+from .creation import full,full_slice,array
 from .reshape import recluster
 from .dispatch import implement_ufunc
 from .base import TensorTrainBase
@@ -67,6 +67,26 @@ def multiply(x,y):
     x=recluster(x,y.cluster,copy=True)
     ntt=raw.multiply_ttslice(x.tomatrices(),y.tomatrices())
     return x.__class__.frommatrices(ntt)
+@implement_ufunc("divide","__call__")
+def divide(x,y):
+    if np.isscalar(x) and np.isscalar(y):
+        return NotImplemented
+    if np.isscalar(x):
+        mats=y.tomatrices()
+        mats[0]/=x
+        return y.__class__.frommatrices(mats)
+    if np.isscalar(y):
+        mats=x.tomatrices()
+        mats[0]/=y
+        return x.__class__.frommatrices(mats)
+    if not isinstance(x,TensorTrainBase) and not isinstance(y,TensorTrainBase):
+        return NotImplemented #not my job then
+    if not isinstance(y,TensorTrainBase):
+        return np.divide(np.array(x,like=y),y)
+    if not isinstance(x,TensorTrainBase):
+        return np.divide(x,np.array(y,like=x))
+    else:
+        raise NotImplementedError("division of two tensortrains not yet supported")
 
 @implement_ufunc("conjugate","__call__")
 def conjugate(x):
