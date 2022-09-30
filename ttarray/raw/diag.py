@@ -1,5 +1,5 @@
 import numpy as np
-def construt_diag_ttslice(ttslice,k=0):
+def construct_diag_ttslice(ttslice,k=0):
     if k!=0:
         raise NotImplementedError("Not there yet")
     raise NotImplementedError("Not yet")

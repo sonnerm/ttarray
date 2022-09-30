@@ -1,16 +1,15 @@
 import numpy as np
 from .creation import asarray
 from .dispatch import implement_function,implement_ufunc
-from .base import TensorTrainBase
 from .slice import TensorTrainSlice
 from .array import TensorTrainArray
 from .reshape import recluster
 import ttarray.raw as raw
-def tensordot_slice(x,y,axes=2,out=None):
-    '''
-        tensordot, but with slice-aware ordering of uncontracted indices
-    '''
-    pass
+# def tensordot_slice(x,y,axes=2,out=None):
+#     '''
+#         tensordot, but with slice-aware ordering of uncontracted indices
+#     '''
+#     pass
 def _format_axes(axes,xr,yr):
     if isinstance(axes,(int,np.integer)):
         axes=(tuple(range(-axes,0)),tuple(range(0,axes)))
@@ -64,7 +63,7 @@ def multi_dot(arrays,*,out=None):
     narrays=[]
     cl=None
     for a in arrays[::-1]:
-        a=array(a)
+        a=asarray(a)
         if cl==-1:
             raise ValueError("Only the first and last array can be 1-d!")
         if cl is not None and len(a.shape)==2:
@@ -76,7 +75,7 @@ def multi_dot(arrays,*,out=None):
             raise ValueError("All arrays must be 1-d or 2-d")
         cl=[(c[0],) for c in a.cluster]
         narrays.append(a)
-    return frommatrices(raw.multi_dot([a.tomatrices_unchecked() for a in narrays[::-1]]))
+    return TensorTrainArray.frommatrices(raw.multi_dot([a.tomatrices_unchecked() for a in narrays[::-1]]))
 @implement_function()
 def inner(a,b,/):
     a=asarray(a)
@@ -108,7 +107,7 @@ def trace(a,offset=0, axis1=0,axis2=1,dtype=None,out=None):
         raise ValueError("axis2 out of bounds: %i (rank: %i)"%(axis2,len(a.shape)))
     if isinstance(a,TensorTrainSlice):
         if axis1==0 or axis1==len(a.shape)-1 or axis2==0 or axis2==len(a.shape)-1:
-            return trace(array(a),offset,axis1,axis2,dtype,out)
+            return trace(asarray(a),offset,axis1,axis2,dtype,out)
         a=a.recluster([(x[axis2],x[axis2]) for x in a.cluster],[axis1,axis2])
         return TensorTrainSlice.frommatrices_unchecked([np.trace(x,0,axis1+1,axis2+1,dtype) for x in a.tomatrices_unchecked()])
     elif isinstance(a,TensorTrainArray):

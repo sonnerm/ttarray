@@ -283,7 +283,7 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         return self._data
     def setmatrices(self,dat):
         bup=self._data
-        self._data=[x.copy() for x in self.dat]
+        self._data=[x.copy() for x in dat]
         try:
             self._check_consistency()
             self.clearcenter()
@@ -316,7 +316,7 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         if axes[0]!=0 and axes[-1]!=r:
             raise NotImplementedError("transposing of the boundaries of a TensorTrainSlice is not supported yet")
         else:
-            return self.__class__.frommatrices_unchecked([x.transpose(axes) for x in a.M])
+            return self.__class__.frommatrices_unchecked([x.transpose(axes) for x in self.M])
     def recluster(self,newcluster=None,axes=None,copy=False):
         if newcluster is None:
             shape=self.shape
@@ -362,12 +362,12 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
             return self
         else:
             return self.__class__.frommatrices(raw.recluster(self.tomatrices(),newcluster))
-    def truncate(self,chi_max=None,cutoff=0.0,left=0,right=-1,qr=la.qr,svd=la.svd):
+    def truncate(self,chi_max=None,cutoff=0.0,left=0,right=-1,svd=raw.svd_stable):
         if right<0:
             right+=self.L
         self.canonicalize(right)
         mats=self.tomatrices_unchecked()[left:right+1]
-        raw.left_truncate_svd(mats,chi_max,cutoff)
+        raw.left_truncate_svd(mats,chi_max,cutoff,svd=svd)
         self.tomatrices_unchecked()[left:right+1]=mats
         if not raw.is_canonical(mats,0):
             import warnings

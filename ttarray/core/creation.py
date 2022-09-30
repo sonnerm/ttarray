@@ -1,7 +1,7 @@
 from .array import TensorTrainArray
 from .slice import TensorTrainSlice
 from .dispatch import implement_function
-from ..raw import find_balanced_cluster,trivial_decomposition
+from ..raw import find_balanced_cluster
 import numpy as np
 def _get_cluster_chi_array(shape,cluster,chi):
     if cluster is None:
@@ -164,9 +164,9 @@ def diag(v,k=0):
     if not isinstance(v,TensorTrainArray):
         return NotImplemented
     if len(v.shape)==1:
-        return frommatrices_unchecked(np.einsum("abd->abbd",x) for x in v.tomatrices_unchecked())
+        return TensorTrainArray.frommatrices_unchecked(np.einsum("abd->abbd",x) for x in v.tomatrices_unchecked())
     if len(v.shape)==2:
-        return frommatrices_unchecked(np.einsum("abbd->abd",x) for x in v.tomatrices_unchecked())
+        return TensorTrainArray.frommatrices_unchecked(np.einsum("abbd->abd",x) for x in v.tomatrices_unchecked())
     else:
         raise ValueError("Input must be either 1- or 2-d.")
 

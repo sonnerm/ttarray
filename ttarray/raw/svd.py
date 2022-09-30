@@ -75,21 +75,21 @@ def shift_orthogonality_center_with_singular_values(ttslice,oldcenter,newcenter,
         oldcenter=len(ttslice)+oldcenter
     if oldcenter>newcenter:
         for o in range(oldcenter,newcenter,-1):
-            sh=[None for i in range(ttslice[o].ndim)]
+            sh=[None for _ in range(ttslice[o].ndim)]
             sh[0]=slice(None)
             ttslice[o]=(1/svs[o-1])[tuple(sh)]*ttslice[o]
-            sh=[None for i in range(ttslice[o].ndim)]
+            sh=[None for _ in range(ttslice[o].ndim)]
             sh[-1]=slice(None)
             ttslice[o-1]=svs[o-1][tuple(sh)]*ttslice[o-1]
     elif newcenter>oldcenter:
         for o in range(oldcenter,newcenter):
-            sh=[None for i in range(ttslice[o].ndim)]
+            sh=[None for _ in range(ttslice[o].ndim)]
             sh[-1]=slice(None)
             ttslice[o]=(1/svs[o])[tuple(sh)]*ttslice[o]
             # mm=ttslice[o].reshape((-1,ttslice[o].shape[-1]))
             # if not np.allclose(mm.T.conj()@mm,np.eye(mm.shape[1],like=mm)):
             #     assert False
-            sh=[None for i in range(ttslice[o].ndim)]
+            sh=[None for _ in range(ttslice[o].ndim)]
             sh[0]=slice(None)
             ttslice[o+1]=svs[o][tuple(sh)]*ttslice[o+1]
     else:
