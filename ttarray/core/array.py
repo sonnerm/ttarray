@@ -4,7 +4,6 @@ import numpy.linalg as la
 from .slice import TensorTrainSlice,_TensorTrainSliceData,_normalize_axes
 from .base import TensorTrainBase
 from .dispatch import HANDLER_UFUNC_ARRAY,HANDLER_FUNCTION_ARRAY
-from .. import raw
 class _TensorTrainArrayData(_TensorTrainSliceData):
     def __setitem__(self,ind,it):
         super().__setitem__(ind,it)
