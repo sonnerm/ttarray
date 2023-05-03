@@ -362,12 +362,12 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
             return self
         else:
             return self.__class__.frommatrices(raw.recluster(self.tomatrices(),newcluster))
-    def truncate(self,chi_max=None,cutoff=0.0,left=0,right=-1,svd=raw.svd_stable):
+    def truncate(self,chi_max=None,cutoff=0.0,left=0,right=-1):
         if right<0:
             right+=self.L
         self.canonicalize(right)
         mats=self.tomatrices_unchecked()[left:right+1]
-        raw.left_truncate_svd(mats,chi_max,cutoff,svd=svd)
+        raw.left_truncate_svd(mats,chi_max,cutoff)
         self.tomatrices_unchecked()[left:right+1]=mats
         if not raw.is_canonical(mats,0):
             import warnings
