@@ -14,20 +14,14 @@ def find_balanced_cluster(shape,L=None):
         if s==1:
             cluster.append([1])
             continue
-        while s%2==0:
-            clc.append(2)
-            s//=2
-        while s>1:
-            i=0
-            for i in range(3,int(np.sqrt(s))+1,2):
-                if s%i==0:
-                    clc.append(i)
-                    s//=i
-                    i=0
-                    break
-            if i==0:
-                clc.append(s)
-                break
+        d=2
+        while d**2 <= s:
+            while s%d==0:
+                clc.append(d)
+                s//=d
+            d+=1
+        if s>1:
+            clc.append(s)
         cluster.append(clc[::-1])
     if L is None:
         L=max(len(c) for c in cluster)

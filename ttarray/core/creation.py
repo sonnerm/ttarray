@@ -64,7 +64,7 @@ def zeros_slice(shape,dtype=np.float64,cluster=None,chi=1):
     return TensorTrainSlice.frommatrices(ms)
 
 @implement_function()
-def zeros_like(prototype, dtype=None, shape=None, cluster=None, chi=1,*,order=None,subok=None):
+def zeros_like(prototype, dtype=None, shape=None, cluster=None, chi=1,*,order=None,subok=None,device=None):
     if dtype is None:
         dtype=prototype.dtype
     if shape is None:
@@ -77,7 +77,7 @@ def zeros_like(prototype, dtype=None, shape=None, cluster=None, chi=1,*,order=No
         return NotImplemented
 
 @implement_function("ones","array")
-def ones(shape,dtype=np.float64,cluster=None,chi=1,*,order=None):
+def ones(shape,dtype=np.float64,cluster=None,chi=1,*,order=None,device=None):
     cluster,chi=_get_cluster_chi_array(shape,cluster,chi)
     ms=[np.zeros([c1]+list(s)+[c2],dtype) for c1,s,c2 in zip(chi[:-1],cluster,chi[1:])]
     for m in ms:
@@ -85,7 +85,7 @@ def ones(shape,dtype=np.float64,cluster=None,chi=1,*,order=None):
     return TensorTrainArray.frommatrices(ms)
 
 @implement_function("ones","slice")
-def ones_slice(shape,dtype=np.float64,cluster=None,chi=1,*,order=None):
+def ones_slice(shape,dtype=np.float64,cluster=None,chi=1,*,order=None,device=None):
     cluster,chi=_get_cluster_chi_slice(shape,cluster,chi)
     ms=[np.zeros([c1]+list(s)+[c2],dtype) for c1,s,c2 in zip(chi[:-1],cluster,chi[1:])]
     if len(ms)==1:
@@ -111,7 +111,7 @@ def ones_like(prototype, dtype=None, shape=None, cluster=None, chi=1,*,order=Non
         return NotImplemented
 
 @implement_function("full","array")
-def full(shape,fill_value,dtype=None,cluster=None,chi=1,*,order=None):
+def full(shape,fill_value,dtype=None,cluster=None,chi=1,*,order=None,device=None):
     cluster,chi=_get_cluster_chi_array(shape,cluster,chi)
     if dtype is None:
         dtype=np.array(fill_value).dtype
@@ -121,7 +121,7 @@ def full(shape,fill_value,dtype=None,cluster=None,chi=1,*,order=None):
     ms[-1]*=fill_value
     return TensorTrainArray.frommatrices(ms)
 @implement_function("full","slice")
-def full_slice(shape,fill_value,dtype=None,cluster=None,chi=1,*,order=None):
+def full_slice(shape,fill_value,dtype=None,cluster=None,chi=1,*,order=None,device=None):
     cluster,chi=_get_cluster_chi_slice(shape,cluster,chi)
     if dtype is None:
         dtype=np.array(fill_value).dtype

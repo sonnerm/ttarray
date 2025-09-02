@@ -379,3 +379,5 @@ class TensorTrainSlice(TensorTrainBase,NDArrayOperatorsMixin):
         return self.__class__.frommatrices([x.copy() for x in self.tomatrices_unchecked()])
     def conj(self):
         return self.__class__.frommatrices([x.conj() for x in self.tomatrices_unchecked()])
+    def __getitem__(self,slice):
+        pass
